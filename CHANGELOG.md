@@ -3,6 +3,13 @@
 All notable changes to Preview MD. Versions follow the tag format
 `vMAJOR.MINOR.PATCH[-beta.N]`; the newest entry is at the top.
 
+## [1.0.2] - 2026-11-19
+
+- Update-path verification release: no user-facing changes. Published
+  to prove the in-app updater end to end on a real device (detect,
+  download, checksum verification, install over 1.0.1), after a beta
+  with a deliberately wrong checksum was correctly rejected.
+
 ## [1.0.1] - 2026-11-19
 
 - Fixed: the bottom navigation bar was missing from the 1.0.0 release
