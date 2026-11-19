@@ -105,7 +105,6 @@
     <string name="update_error_checksum">The downloaded file did not match its checksum and was deleted.</string>
     <string name="update_error_install">The installation failed.</string>
     <string name="update_error_no_apk">The release has no installable file.</string>
-    <string name="about_title">About</string>
     <string name="about_developer_name">Mahmoud Nassar</string>
     <string name="about_role">Developer</string>
     <string name="about_facebook">Facebook</string>
