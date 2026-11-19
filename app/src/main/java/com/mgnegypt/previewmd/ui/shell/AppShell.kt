@@ -59,8 +59,7 @@ import kotlinx.coroutines.launch
 /**
  * The navigation shell: hosts the pickers (open document, open tree,
  * create document), the + action sheet, the floating bottom bar and the
- * NavHost. Viewer, Editor and About still show placeholders until their
- * phases (4, 5 and 7) land.
+ * NavHost. All six screens are real since Phase 7.
  */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -252,7 +251,9 @@ fun AppShell(
                 )
             }
             composable<AboutRoute> {
-                PlaceholderScreen(title = stringResource(R.string.about_title))
+                com.mgnegypt.previewmd.ui.about.AboutScreen(
+                    onBack = { navController.popBackStack() }
+                )
             }
         }
     }

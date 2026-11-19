@@ -117,4 +117,11 @@
     <string name="update_error_checksum">الملف اللي نزل مش مطابق لبصمته واتمسح.</string>
     <string name="update_error_install">التثبيت فشل.</string>
     <string name="update_error_no_apk">الإصدار ده مفيهوش ملف قابل للتثبيت.</string>
+    <string name="about_title">حول</string>
+    <string name="about_developer_name">Mahmoud Nassar</string>
+    <string name="about_role">مطور</string>
+    <string name="about_facebook">Facebook</string>
+    <string name="about_instagram">Instagram</string>
+    <string name="about_x">X</string>
+    <string name="about_whatsapp">WhatsApp</string>
 </resources>

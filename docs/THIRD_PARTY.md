@@ -215,3 +215,10 @@ DAMAGES, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
 FROM, OUT OF THE USE OR INABILITY TO USE THE FONT SOFTWARE OR FROM
 OTHER DEALINGS IN THE FONT SOFTWARE.
 ```
+
+## Brand icons (About screen)
+
+The Facebook, Instagram, X and WhatsApp glyphs in `res/drawable/ic_brand_*.xml`
+are the official brand paths from Simple Icons (simpleicons.org), which is
+CC0-1.0 (public domain). Each brand's trademark belongs to its owner; the
+icons are used only as links to the developer's own profiles.
