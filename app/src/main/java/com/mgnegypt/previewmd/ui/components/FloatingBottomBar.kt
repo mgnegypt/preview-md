@@ -19,6 +19,12 @@ import androidx.compose.material.icons.filled.Person
 import androidx.compose.material.icons.outlined.Description
 import androidx.compose.material3.Icon
 import androidx.compose.runtime.Composable
+import com.mgnegypt.previewmd.R
+import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.semantics.semantics
+import androidx.compose.ui.semantics.role
+import androidx.compose.ui.semantics.contentDescription
+import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -44,6 +50,7 @@ fun FloatingBottomBar(
     onCenterClick: () -> Unit,
     modifier: Modifier = Modifier
 ) {
+    val newFileLabel = stringResource(R.string.nav_new_file)
     Row(
         modifier = modifier
             .fillMaxWidth()
@@ -56,11 +63,13 @@ fun FloatingBottomBar(
     ) {
         BarItem(
             icon = Icons.Filled.Home,
+            label = stringResource(R.string.home_title),
             selected = selectedIndex == 0,
             onClick = { onItemSelected(0) }
         )
         BarItem(
             icon = Icons.Outlined.Description,
+            label = stringResource(R.string.welcome_open_file),
             selected = selectedIndex == 1,
             onClick = { onItemSelected(1) }
         )
@@ -69,7 +78,11 @@ fun FloatingBottomBar(
                 .size(56.dp)
                 .clip(CircleShape)
                 .background(AccentPink)
-                .clickable(onClick = onCenterClick),
+                .clickable(onClick = onCenterClick)
+                .semantics {
+                    contentDescription = newFileLabel
+                    role = Role.Button
+                },
             contentAlignment = Alignment.Center
         ) {
             Icon(
@@ -81,11 +94,13 @@ fun FloatingBottomBar(
         }
         BarItem(
             icon = Icons.Filled.LightMode,
+            label = stringResource(R.string.settings_title),
             selected = selectedIndex == 2,
             onClick = { onItemSelected(2) }
         )
         BarItem(
             icon = Icons.Filled.Person,
+            label = stringResource(R.string.about_title),
             selected = selectedIndex == 3,
             onClick = { onItemSelected(3) }
         )
@@ -95,6 +110,7 @@ fun FloatingBottomBar(
 @Composable
 private fun BarItem(
     icon: ImageVector,
+    label: String,
     selected: Boolean,
     onClick: () -> Unit
 ) {
@@ -102,7 +118,11 @@ private fun BarItem(
         modifier = Modifier
             .size(52.dp)
             .clip(CircleShape)
-            .clickable(onClick = onClick),
+            .clickable(onClick = onClick)
+            .semantics {
+                contentDescription = label
+                role = Role.Button
+            },
         contentAlignment = Alignment.Center
     ) {
         Icon(
