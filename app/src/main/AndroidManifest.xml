@@ -2,6 +2,10 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools">
 
+    <!-- Remote images in Markdown (badges, screenshots). No storage
+         permission is requested anywhere in this app. -->
+    <uses-permission android:name="android.permission.INTERNET" />
+
     <application
         android:name=".PreviewMdApp"
         android:icon="@mipmap/ic_launcher"

@@ -195,7 +195,8 @@ fun AppShell(
                 )
             }
             composable<ViewerRoute> {
-                PlaceholderScreen(title = stringResource(R.string.viewer_title))
+                // Phase 4 spike; the real viewer replaces this next.
+                com.mgnegypt.previewmd.ui.viewer.MarkdownSpikeScreen()
             }
             composable<EditorRoute> {
                 PlaceholderScreen(title = stringResource(R.string.editor_title))

@@ -2,13 +2,28 @@ package com.mgnegypt.previewmd
 
 import android.app.Application
 import androidx.appcompat.app.AppCompatDelegate
+import coil3.ImageLoader
+import coil3.PlatformContext
+import coil3.SingletonImageLoader
+import coil3.network.okhttp.OkHttpNetworkFetcherFactory
+import coil3.svg.SvgDecoder
 import androidx.core.os.LocaleListCompat
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 
-class PreviewMdApp : Application() {
+class PreviewMdApp : Application(), SingletonImageLoader.Factory {
+
+    /** Coil 3 image loader: network fetching plus SVG (shields.io badges). */
+    override fun newImageLoader(context: PlatformContext): ImageLoader {
+        return ImageLoader.Builder(context)
+            .components {
+                add(OkHttpNetworkFetcherFactory())
+                add(SvgDecoder.Factory())
+            }
+            .build()
+    }
     lateinit var container: AppContainer
         private set
 
