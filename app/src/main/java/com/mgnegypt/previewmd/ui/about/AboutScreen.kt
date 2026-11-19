@@ -1,6 +1,8 @@
 package com.mgnegypt.previewmd.ui.about
 
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -18,7 +20,6 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
-import androidx.compose.material.icons.filled.Person
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -28,6 +29,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.rotate
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalUriHandler
@@ -157,24 +159,19 @@ private fun AvatarBlock() {
                 .clip(RoundedCornerShape(5.dp))
                 .background(AccentGreen)
         )
-        Box(
+        // Mahmoud's own photo (supplied 2026-11-19), in the design's
+        // pink circle as a ring around it.
+        Image(
+            painter = painterResource(R.drawable.developer_avatar),
+            contentDescription = stringResource(
+                R.string.about_developer_name
+            ),
+            contentScale = ContentScale.Crop,
             modifier = Modifier
                 .size(128.dp)
                 .clip(CircleShape)
-                .background(AccentPink),
-            contentAlignment = Alignment.Center
-        ) {
-            // Placeholder silhouette; Mahmoud's photo replaces this in
-            // DeveloperInfo-driven form when it arrives (Phase 7).
-            Icon(
-                imageVector = Icons.Filled.Person,
-                contentDescription = stringResource(
-                    R.string.about_developer_name
-                ),
-                tint = Ink,
-                modifier = Modifier.size(72.dp)
-            )
-        }
+                .border(5.dp, AccentPink, CircleShape)
+        )
     }
 }
 
