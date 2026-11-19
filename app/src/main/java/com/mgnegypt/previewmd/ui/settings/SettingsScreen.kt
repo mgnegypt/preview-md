@@ -170,7 +170,8 @@ fun SettingsScreen(
                         if (index == 1) ReleaseChannel.BETA else ReleaseChannel.STABLE
                     )
                 },
-                containerColor = Cream
+                containerColor = Cream,
+                contentColor = Ink
             )
             UpdateCheckSection(
                 state = updateState,
