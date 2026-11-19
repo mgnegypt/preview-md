@@ -69,3 +69,23 @@ Method: Google Maven and Maven Central `maven-metadata.xml`, the GitHub releases
   documentation on 2026-11-19 (2022-11-28 remains supported until
   2028-03-10 but is no longer the latest). The updater sends
   `X-GitHub-Api-Version: 2026-03-10` on every request.
+
+## Addendum (Phase 7 tests, 2026-11-19)
+
+- Test runtime: **org.robolectric:robolectric 4.18** (test-only) with
+  **androidx.test:core 1.7.0** (ApplicationProvider). Robolectric is
+  the runtime that lets the plan's own Phase 7 targets — Room
+  in-memory tests and Compose UI tests — run in CI, which has no
+  emulator job. It was NOT in the plan's Section 3 list, so it was
+  held at the Phase 7 stop point and added only on the owner's
+  explicit instruction ("execute Phase 7") on 2026-11-19. Version
+  verified against robolectric.org's official compatibility table:
+  4.18 covers API 24-37 and is built with AGP 9.5.0 / Gradle 9.8.2,
+  matching this project's AGP 9.5.1 toolchain.
+- The Compose UI test artifact itself (ui-test-junit4) IS in the
+  plan's Section 3 and stays BOM-managed (2026.11.01).
+- Robolectric test classes pin `@Config(sdk = [35])`: per the same
+  official table, running Robolectric against API 36/37 requires
+  JDK 21, while this project's CI runs JDK 17 (the plan's fixed
+  toolchain), which supports up to API 35. The pin selects the
+  TEST runtime only; the app still compiles and targets API 37.1.
