@@ -3,6 +3,7 @@ package com.mgnegypt.previewmd.ui.editor
 import android.net.Uri
 import androidx.compose.foundation.text.input.TextFieldState
 import androidx.compose.foundation.text.input.setTextAndPlaceCursorAtEnd
+import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.text.TextRange
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
@@ -16,7 +17,6 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
-import kotlinx.coroutines.flow.snapshotFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
@@ -121,8 +121,8 @@ class EditorViewModel(
 
     private fun applyOp(op: (String, Int, Int) -> EditResult) {
         val current = textState.text.toString()
-        val selection = textState.selection
-        val result = op(current, selection.start, selection.end)
+        val sel = textState.selection
+        val result = op(current, sel.start, sel.end)
         if (result.text != current) {
             textState.edit {
                 replace(0, length, result.text)
