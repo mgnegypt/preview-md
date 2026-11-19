@@ -6,25 +6,51 @@ import androidx.compose.material3.darkColorScheme
 import androidx.compose.material3.lightColorScheme
 import androidx.compose.runtime.Composable
 
-// Minimal seed theme for the Phase 0 bootstrap. Phase 1 builds the full
-// design system (exact colors, typography, shapes) on top of this shape.
-// Dynamic color is deliberately not used: the design has a fixed palette.
+// Fixed custom palette from the design file. Dynamic color is deliberately
+// not used. In both themes the primary action is the ink pill with cream
+// text, exactly as drawn; components take accent colors from Color.kt.
 private val LightColors = lightColorScheme(
     primary = Ink,
-    background = CreamBackground,
-    surface = BeigeSurface,
-    onPrimary = CreamBackground,
+    onPrimary = Cream,
+    primaryContainer = AccentYellow,
+    onPrimaryContainer = Ink,
+    secondary = AccentPink,
+    onSecondary = Ink,
+    secondaryContainer = Beige,
+    onSecondaryContainer = Ink,
+    tertiary = AccentBlue,
+    onTertiary = Ink,
+    tertiaryContainer = AccentGreen,
+    onTertiaryContainer = Ink,
+    background = Cream,
     onBackground = Ink,
-    onSurface = Ink
+    surface = Beige,
+    onSurface = Ink,
+    surfaceVariant = Beige,
+    onSurfaceVariant = MutedInk,
+    outline = MutedInk
 )
 
 private val DarkColors = darkColorScheme(
-    primary = DarkAccentYellow,
+    primary = Ink,
+    onPrimary = Cream,
+    primaryContainer = AccentYellow,
+    onPrimaryContainer = Ink,
+    secondary = AccentPink,
+    onSecondary = Ink,
+    secondaryContainer = DarkSurface,
+    onSecondaryContainer = Cream,
+    tertiary = AccentBlue,
+    onTertiary = Ink,
+    tertiaryContainer = AccentGreen,
+    onTertiaryContainer = Ink,
     background = DarkBackground,
+    onBackground = Cream,
     surface = DarkSurface,
-    onPrimary = DarkBackground,
-    onBackground = CreamBackground,
-    onSurface = CreamBackground
+    onSurface = Cream,
+    surfaceVariant = DarkSurface,
+    onSurfaceVariant = MutedOnDark,
+    outline = MutedOnDark
 )
 
 @Composable
@@ -34,6 +60,7 @@ fun PreviewMDTheme(
 ) {
     MaterialTheme(
         colorScheme = if (darkTheme) DarkColors else LightColors,
+        shapes = PreviewShapes,
         content = content
     )
 }
