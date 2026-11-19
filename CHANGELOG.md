@@ -3,6 +3,17 @@
 All notable changes to Preview MD. Versions follow the tag format
 `vMAJOR.MINOR.PATCH[-beta.N]`; the newest entry is at the top.
 
+## [1.0.3] - 2026-11-19
+
+- Fixed: the Check for updates button disappeared after an update was
+  installed — the installed state showed its status text without the
+  button. The button now stays available, as it does after an
+  up-to-date check.
+- Fixed: the unselected release-channel label (Beta while Stable is
+  selected, and the reverse) was invisible in dark mode: cream text on
+  the cream track. Channel labels are now ink in both themes.
+  Both fixes were reported by the developer from on-device use.
+
 ## [1.0.2] - 2026-11-19
 
 - Update-path verification release: no user-facing changes. Published
