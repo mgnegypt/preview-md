@@ -1,5 +1,18 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="app_name">Preview MD</string>
-    <string name="bootstrap_message">تطبيق Preview MD جاهز. الشاشات الأولى ستصل مع نظام التصميم.</string>
+    <string name="design_gallery_title">معرض التصميم</string>
+    <string name="gallery_light">فاتح</string>
+    <string name="gallery_dark">داكن</string>
+    <string name="gallery_primary_action">ابدأ الآن</string>
+    <string name="gallery_secondary_action">افتح ملفا</string>
+    <string name="gallery_accent_action">حسنا</string>
+    <string name="gallery_segment_recent">الأخيرة</string>
+    <string name="gallery_segment_folders">المجلدات</string>
+    <string name="gallery_updates">التحديثات</string>
+    <string name="gallery_auto_updates">التحديث التلقائي</string>
+    <string name="gallery_channel_stable">مستقرة</string>
+    <string name="gallery_channel_beta">تجريبية</string>
+    <string name="gallery_update_available">التحديث 1.1.0 متاح</string>
+    <string name="gallery_download">تنزيل وتثبيت</string>
 </resources>

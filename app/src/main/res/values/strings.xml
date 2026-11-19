@@ -1,5 +1,18 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="app_name">Preview MD</string>
-    <string name="bootstrap_message">Preview MD is ready. The first screens arrive with the design system.</string>
+    <string name="design_gallery_title">Design gallery</string>
+    <string name="gallery_light">Light</string>
+    <string name="gallery_dark">Dark</string>
+    <string name="gallery_primary_action">Get started</string>
+    <string name="gallery_secondary_action">Open a file</string>
+    <string name="gallery_accent_action">OK</string>
+    <string name="gallery_segment_recent">Recent</string>
+    <string name="gallery_segment_folders">Folders</string>
+    <string name="gallery_updates">Updates</string>
+    <string name="gallery_auto_updates">Automatic updates</string>
+    <string name="gallery_channel_stable">Stable</string>
+    <string name="gallery_channel_beta">Beta</string>
+    <string name="gallery_update_available">Update 1.1.0 is available</string>
+    <string name="gallery_download">Download and install</string>
 </resources>
