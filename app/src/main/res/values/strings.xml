@@ -27,4 +27,32 @@
     <string name="settings_channel">Release channel</string>
     <string name="channel_stable">Stable</string>
     <string name="channel_beta">Beta</string>
+
+    <string name="home_search_placeholder">Search files</string>
+    <string name="home_recent">Recent</string>
+    <string name="home_folders">Folders</string>
+    <string name="home_empty_recents">No files yet</string>
+    <string name="home_empty_recents_body">Open a Markdown file and it will appear here.</string>
+    <string name="home_empty_folders">No folders added</string>
+    <string name="home_empty_folders_body">Add a folder to browse the Markdown files inside it.</string>
+    <string name="home_add_folder">Add folder</string>
+    <string name="theme_toggle">Toggle theme</string>
+    <string name="time_now">now</string>
+    <string name="time_yesterday">Yesterday</string>
+    <plurals name="time_minutes">
+        <item quantity="one">%1$d min</item>
+        <item quantity="other">%1$d min</item>
+    </plurals>
+    <plurals name="time_hours">
+        <item quantity="one">%1$d h</item>
+        <item quantity="other">%1$d h</item>
+    </plurals>
+    <plurals name="time_days">
+        <item quantity="one">%1$d d</item>
+        <item quantity="other">%1$d d</item>
+    </plurals>
+    <string name="sheet_new_file">New file</string>
+    <string name="sheet_open_file">Open file</string>
+    <string name="sheet_add_folder">Add folder</string>
+    <string name="fab_add">Add</string>
 </resources>

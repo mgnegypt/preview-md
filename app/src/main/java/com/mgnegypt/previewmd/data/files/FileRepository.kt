@@ -5,6 +5,7 @@ import android.database.Cursor
 import android.net.Uri
 import android.provider.DocumentsContract
 import android.provider.OpenableColumns
+import androidx.documentfile.provider.DocumentFile
 import java.io.FileNotFoundException
 import java.nio.ByteBuffer
 import java.nio.charset.CodingErrorAction
@@ -100,6 +101,15 @@ class FileRepository(context: Context) {
         val path = id.substringAfter(':', "")
         val parent = path.substringBeforeLast('/', "")
         parent.substringAfterLast('/')
+    }
+
+    /** The display name of a granted folder tree root. */
+    suspend fun treeDisplayName(treeUri: Uri): String = withContext(Dispatchers.IO) {
+        runCatching {
+            DocumentFile.fromTreeUri(appContext, treeUri)?.name
+        }.getOrNull()?.takeIf { it.isNotBlank() }
+            ?: treeUri.lastPathSegment?.substringAfterLast('/')
+            ?: "Folder"
     }
 
     /** True when the document can still be queried (permission alive). */

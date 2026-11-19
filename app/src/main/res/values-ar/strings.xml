@@ -27,4 +27,41 @@
     <string name="settings_channel">قناة الإصدارات</string>
     <string name="channel_stable">مستقرة</string>
     <string name="channel_beta">تجريبية</string>
+
+    <string name="home_search_placeholder">ابحث في الملفات</string>
+    <string name="home_recent">الأخيرة</string>
+    <string name="home_folders">المجلدات</string>
+    <string name="home_empty_recents">لا توجد ملفات بعد</string>
+    <string name="home_empty_recents_body">افتح ملف Markdown وسيظهر هنا.</string>
+    <string name="home_empty_folders">لا توجد مجلدات مضافة</string>
+    <string name="home_empty_folders_body">أضف مجلدا لتصفح ملفات Markdown التي بداخله.</string>
+    <string name="home_add_folder">أضف مجلدا</string>
+    <string name="theme_toggle">تبديل المظهر</string>
+    <string name="time_now">الآن</string>
+    <string name="time_yesterday">أمس</string>
+    <plurals name="time_minutes">
+        <item quantity="one">قبل دقيقة</item>
+        <item quantity="two">قبل دقيقتين</item>
+        <item quantity="few">قبل %1$d دقائق</item>
+        <item quantity="many">قبل %1$d دقيقة</item>
+        <item quantity="other">قبل %1$d دقيقة</item>
+    </plurals>
+    <plurals name="time_hours">
+        <item quantity="one">قبل ساعة</item>
+        <item quantity="two">قبل ساعتين</item>
+        <item quantity="few">قبل %1$d ساعات</item>
+        <item quantity="many">قبل %1$d ساعة</item>
+        <item quantity="other">قبل %1$d ساعة</item>
+    </plurals>
+    <plurals name="time_days">
+        <item quantity="one">قبل يوم</item>
+        <item quantity="two">قبل يومين</item>
+        <item quantity="few">قبل %1$d أيام</item>
+        <item quantity="many">قبل %1$d يوم</item>
+        <item quantity="other">قبل %1$d يوم</item>
+    </plurals>
+    <string name="sheet_new_file">ملف جديد</string>
+    <string name="sheet_open_file">افتح ملفا</string>
+    <string name="sheet_add_folder">أضف مجلدا</string>
+    <string name="fab_add">إضافة</string>
 </resources>

@@ -48,7 +48,7 @@ class RecentFilesRepository(
     }
 
     /** Drops recents the access check can no longer open. */
-    suspend fun pruneInaccessible(isAccessible: (String) -> Boolean) {
+    suspend fun pruneInaccessible(isAccessible: suspend (String) -> Boolean) {
         val uris = recentDao.allUrisByRecency()
         val dead = uris.filter { !isAccessible(it) }
         if (dead.isNotEmpty()) {
