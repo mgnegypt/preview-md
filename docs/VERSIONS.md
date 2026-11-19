@@ -61,3 +61,11 @@ Method: Google Maven and Maven Central `maven-metadata.xml`, the GitHub releases
 ## Decisions taken with these versions
 - applicationId: `com.mgnegypt.previewmd` (decided by the project owner on 2026-11-19; permanent from the first public release).
 - The version catalog is `gradle/libs.versions.toml`; this file and the catalog must always agree.
+
+## Addendum (Phase 6, 2026-11-19)
+
+- GitHub REST API version header: **2026-03-10** — verified as the
+  latest supported version in GitHub's official "API versions"
+  documentation on 2026-11-19 (2022-11-28 remains supported until
+  2028-03-10 but is no longer the latest). The updater sends
+  `X-GitHub-Api-Version: 2026-03-10` on every request.
