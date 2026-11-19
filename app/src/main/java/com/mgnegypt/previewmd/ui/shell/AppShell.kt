@@ -242,7 +242,8 @@ fun AppShell(
             composable<SettingsRoute> {
                 val settingsViewModel: SettingsViewModel = viewModel(
                     factory = SettingsViewModel.Factory(
-                        container.settingsRepository
+                        container.settingsRepository,
+                        container.updateManager
                     )
                 )
                 SettingsScreen(

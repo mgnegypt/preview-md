@@ -6,6 +6,7 @@ import androidx.compose.material3.Surface
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
@@ -27,6 +28,10 @@ fun PreviewMdRoot(container: AppContainer) {
         .collectAsStateWithLifecycle(initialValue = null)
     val state = settings
     val scope = rememberCoroutineScope()
+
+    LaunchedEffect(Unit) {
+        container.updateManager.autoCheckIfDue()
+    }
 
     val darkTheme = when (state?.themeMode) {
         ThemeMode.DARK -> true

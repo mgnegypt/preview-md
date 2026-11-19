@@ -97,4 +97,24 @@
     <string name="editor_list">قائمة</string>
     <string name="editor_undo">تراجع</string>
     <string name="editor_redo">إعادة</string>
+    <string name="update_check">دور على تحديثات</string>
+    <string name="update_checking">بدور على تحديثات...</string>
+    <string name="update_up_to_date">انت على أحدث نسخة</string>
+    <string name="update_installed">التحديث اتثبت</string>
+    <string name="update_available_title">في تحديث جديد</string>
+    <string name="update_available_version">النسخة %1$s جاهزة للتثبيت</string>
+    <string name="update_download">تنزيل</string>
+    <string name="update_downloading">بينزل... %1$d%%</string>
+    <string name="update_verifying">بيتحقق من الملف...</string>
+    <string name="update_install">تثبيت</string>
+    <string name="update_installing">بيتثبت...</string>
+    <string name="update_allow_installs">عشان التحديث يتثبت، اسمح بالتثبيت من التطبيق ده لما يتطلب منك.</string>
+    <string name="update_error_offline">مفيش اتصال. اتأكد من الإنترنت وحاول تاني.</string>
+    <string name="update_error_rate_limited">GitHub بيحد الطلبات دلوقتي. حاول تاني بعدين.</string>
+    <string name="update_error_no_release">مفيش أي إصدار منشور لسه.</string>
+    <string name="update_error_server">فحص التحديثات فشل. حاول تاني بعدين.</string>
+    <string name="update_error_download">التنزيل فشل. حاول تاني.</string>
+    <string name="update_error_checksum">الملف اللي نزل مش مطابق لبصمته واتمسح.</string>
+    <string name="update_error_install">التثبيت فشل.</string>
+    <string name="update_error_no_apk">الإصدار ده مفيهوش ملف قابل للتثبيت.</string>
 </resources>

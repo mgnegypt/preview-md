@@ -56,7 +56,8 @@ enum class UpdateErrorKind {
     SERVER,
     PARSE,
     DOWNLOAD_FAILED,
-    CHECKSUM_MISMATCH
+    CHECKSUM_MISMATCH,
+    INSTALL_FAILED
 }
 
 class UpdateException(

@@ -6,6 +6,9 @@ import androidx.room.Room
 import kotlinx.coroutines.flow.MutableStateFlow
 import com.mgnegypt.previewmd.data.files.DraftStore
 import com.mgnegypt.previewmd.data.files.FileRepository
+import com.mgnegypt.previewmd.data.update.UpdateInstaller
+import com.mgnegypt.previewmd.data.update.UpdateManager
+import com.mgnegypt.previewmd.data.update.UpdateRepository
 import com.mgnegypt.previewmd.data.recent.AppDatabase
 import com.mgnegypt.previewmd.data.recent.RecentFilesRepository
 import com.mgnegypt.previewmd.data.settings.SettingsRepository
@@ -33,6 +36,17 @@ class AppContainer(context: Context) {
     val fileRepository = FileRepository(appContext)
 
     val draftStore = DraftStore(appContext)
+
+    val updateRepository = UpdateRepository(appContext)
+
+    val updateInstaller = UpdateInstaller()
+
+    val updateManager = UpdateManager(
+        context = appContext,
+        repository = updateRepository,
+        installer = updateInstaller,
+        settings = settingsRepository
+    )
 
     /**
      * A file the user asked to open from outside the navigation graph

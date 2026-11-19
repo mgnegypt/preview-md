@@ -4,6 +4,7 @@ import android.content.Context
 import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.Preferences
 import androidx.datastore.preferences.core.booleanPreferencesKey
+import androidx.datastore.preferences.core.longPreferencesKey
 import androidx.datastore.preferences.core.edit
 import androidx.datastore.preferences.core.stringPreferencesKey
 import androidx.datastore.preferences.preferencesDataStore
@@ -30,7 +31,9 @@ data class SettingsState(
     val languageTag: String? = null,
     val autoUpdate: Boolean = true,
     val channel: ReleaseChannel = ReleaseChannel.STABLE,
-    val onboardingDone: Boolean = false
+    val onboardingDone: Boolean = false,
+    /** Epoch millis of the last update check (auto or manual); 0 = never. */
+    val lastUpdateCheckAt: Long = 0
 )
 
 private val Context.settingsDataStore: DataStore<Preferences> by preferencesDataStore(
@@ -61,7 +64,8 @@ class SettingsRepository(
             channel = prefs[KEY_CHANNEL]?.let { stored ->
                 ReleaseChannel.entries.firstOrNull { it.name == stored }
             } ?: ReleaseChannel.STABLE,
-            onboardingDone = prefs[KEY_ONBOARDING_DONE] ?: false
+            onboardingDone = prefs[KEY_ONBOARDING_DONE] ?: false,
+            lastUpdateCheckAt = prefs[KEY_LAST_UPDATE_CHECK] ?: 0
         )
     }
 
@@ -83,6 +87,10 @@ class SettingsRepository(
         dataStore.edit { it[KEY_CHANNEL] = channel.name }
     }
 
+    suspend fun setLastUpdateCheckAt(epochMillis: Long) {
+        dataStore.edit { it[KEY_LAST_UPDATE_CHECK] = epochMillis }
+    }
+
     suspend fun setOnboardingDone(done: Boolean) {
         dataStore.edit { it[KEY_ONBOARDING_DONE] = done }
     }
@@ -93,5 +101,6 @@ class SettingsRepository(
         val KEY_AUTO_UPDATE = booleanPreferencesKey("auto_update")
         val KEY_CHANNEL = stringPreferencesKey("release_channel")
         val KEY_ONBOARDING_DONE = booleanPreferencesKey("onboarding_done")
+        val KEY_LAST_UPDATE_CHECK = longPreferencesKey("last_update_check_at")
     }
 }

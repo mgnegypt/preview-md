@@ -85,4 +85,24 @@
     <string name="editor_list">List</string>
     <string name="editor_undo">Undo</string>
     <string name="editor_redo">Redo</string>
+    <string name="update_check">Check for updates</string>
+    <string name="update_checking">Checking for updates...</string>
+    <string name="update_up_to_date">You are up to date</string>
+    <string name="update_installed">Update installed</string>
+    <string name="update_available_title">Update available</string>
+    <string name="update_available_version">Version %1$s is ready to install</string>
+    <string name="update_download">Download</string>
+    <string name="update_downloading">Downloading... %1$d%%</string>
+    <string name="update_verifying">Verifying the download...</string>
+    <string name="update_install">Install</string>
+    <string name="update_installing">Installing...</string>
+    <string name="update_allow_installs">To install the update, allow installs from this app when asked.</string>
+    <string name="update_error_offline">No connection. Check the internet and try again.</string>
+    <string name="update_error_rate_limited">GitHub is limiting requests right now. Try again later.</string>
+    <string name="update_error_no_release">No release is published yet.</string>
+    <string name="update_error_server">The update check failed. Try again later.</string>
+    <string name="update_error_download">The download failed. Try again.</string>
+    <string name="update_error_checksum">The downloaded file did not match its checksum and was deleted.</string>
+    <string name="update_error_install">The installation failed.</string>
+    <string name="update_error_no_apk">The release has no installable file.</string>
 </resources>

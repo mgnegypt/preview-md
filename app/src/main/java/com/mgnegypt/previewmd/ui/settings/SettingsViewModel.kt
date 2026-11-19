@@ -9,14 +9,35 @@ import com.mgnegypt.previewmd.data.settings.ReleaseChannel
 import com.mgnegypt.previewmd.data.settings.SettingsRepository
 import com.mgnegypt.previewmd.data.settings.SettingsState
 import com.mgnegypt.previewmd.data.settings.ThemeMode
+import com.mgnegypt.previewmd.data.update.ReleaseInfo
+import com.mgnegypt.previewmd.data.update.UpdateManager
+import com.mgnegypt.previewmd.data.update.UpdateUiState
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 
 class SettingsViewModel(
-    private val repository: SettingsRepository
+    private val repository: SettingsRepository,
+    private val updateManager: UpdateManager
 ) : ViewModel() {
+
+    val updateState: StateFlow<UpdateUiState> = updateManager.state
+
+    fun onCheckUpdates() {
+        updateManager.check(manual = true)
+    }
+
+    fun onDownloadUpdate(info: ReleaseInfo) {
+        updateManager.download(info)
+    }
+
+    fun canInstall(context: android.content.Context): Boolean =
+        updateManager.canInstall(context)
+
+    fun onInstallUpdate(file: java.io.File) {
+        updateManager.install(file)
+    }
 
     val uiState: StateFlow<SettingsState> = repository.settings.stateIn(
         scope = viewModelScope,
@@ -49,14 +70,15 @@ class SettingsViewModel(
     }
 
     class Factory(
-        private val repository: SettingsRepository
+        private val repository: SettingsRepository,
+        private val updateManager: UpdateManager
     ) : ViewModelProvider.Factory {
         @Suppress("UNCHECKED_CAST")
         override fun <T : ViewModel> create(modelClass: Class<T>): T {
             require(modelClass.isAssignableFrom(SettingsViewModel::class.java)) {
                 "Unknown ViewModel class: ${modelClass.name}"
             }
-            return SettingsViewModel(repository) as T
+            return SettingsViewModel(repository, updateManager) as T
         }
     }
 }
