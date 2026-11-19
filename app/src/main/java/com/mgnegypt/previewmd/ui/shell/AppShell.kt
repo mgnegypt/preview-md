@@ -194,9 +194,33 @@ fun AppShell(
                     }
                 )
             }
-            composable<ViewerRoute> {
-                // Phase 4 spike; the real viewer replaces this next.
-                com.mgnegypt.previewmd.ui.viewer.MarkdownSpikeScreen()
+            composable<ViewerRoute> { backStackEntry ->
+                val route = backStackEntry.toRoute<ViewerRoute>()
+                val viewerViewModel: com.mgnegypt.previewmd.ui.viewer.ViewerViewModel =
+                    viewModel(
+                        key = "viewer-${route.uri}",
+                        factory = com.mgnegypt.previewmd.ui.viewer.ViewerViewModel.Factory(
+                            files = container.fileRepository,
+                            uriString = route.uri
+                        )
+                    )
+                com.mgnegypt.previewmd.ui.viewer.ViewerScreen(
+                    viewModel = viewerViewModel,
+                    onBack = { navController.popBackStack() },
+                    onEdit = {
+                        navController.navigate(EditorRoute(uri = route.uri)) {
+                            launchSingleTop = true
+                        }
+                    },
+                    onOpenLinkedDocument = { uriString ->
+                        scope.launch {
+                            container.intakeOpenedFile(Uri.parse(uriString))
+                        }
+                        navController.navigate(ViewerRoute(uri = uriString)) {
+                            launchSingleTop = true
+                        }
+                    }
+                )
             }
             composable<EditorRoute> {
                 PlaceholderScreen(title = stringResource(R.string.editor_title))

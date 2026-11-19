@@ -206,6 +206,36 @@ class FileRepository(context: Context) {
         }
     }.getOrNull()
 
+    /**
+     * Resolves a relative link (image or document) against the folder
+     * that contains [documentUri], walking up for ".." segments and
+     * down by child name through the provider. Returns the target's
+     * document URI string, or null when any step is unreachable.
+     * Best-effort by provider design; callers degrade gracefully.
+     */
+    suspend fun resolveSibling(
+        documentUri: Uri,
+        relativePath: String
+    ): String? = withContext(Dispatchers.IO) {
+        runCatching {
+            val parsed = parseRelativePath(relativePath) ?: return@runCatching null
+            val (ups, downs) = parsed
+            if (downs.isEmpty()) return@runCatching null
+            var current: DocumentFile? =
+                DocumentFile.fromSingleUri(context, documentUri)?.parentFile
+            repeat(ups) {
+                current = current?.parentFile
+            }
+            for (segment in downs) {
+                current = current?.listFiles()
+                    ?.firstOrNull { it.name == segment }
+                if (current == null) return@runCatching null
+            }
+            val target = current ?: return@runCatching null
+            if (target.isFile) target.uri.toString() else null
+        }.getOrNull()
+    }
+
     private fun queryString(uri: Uri, column: String): String? = try {
         resolver.query(uri, arrayOf(column), null, null, null)?.use { cursor ->
             if (cursor.moveToFirst()) cursor.getString(0) else null
@@ -213,6 +243,80 @@ class FileRepository(context: Context) {
     } catch (e: Exception) {
         null
     }
+}
+
+/**
+ * Splits a relative Markdown link into the number of ".." steps above
+ * the containing folder and the remaining downward path segments
+ * (URL-decoded). Returns null for absolute or scheme-carrying links.
+ * Pure and unit-tested.
+ */
+fun parseRelativePath(link: String): Pair<Int, List<String>>? {
+    val clean = link.trim()
+    if (clean.isEmpty() || clean.startsWith("/") ||
+        clean.contains("://") || clean.startsWith("#")
+    ) {
+        return null
+    }
+    var ups = 0
+    val downs = mutableListOf<String>()
+    for (raw in clean.replace('\\', '/').split('/')) {
+        when (raw) {
+            "", "." -> Unit
+            ".." -> if (downs.isEmpty()) ups++ else downs.removeAt(downs.lastIndex)
+            else -> downs.add(percentDecode(raw))
+        }
+    }
+    return ups to downs
+}
+
+/**
+ * Decodes %XX escapes as UTF-8 without touching android.net.Uri, so the
+ * path helpers stay pure and unit-testable on the JVM. A '%' that is not
+ * followed by two hex digits is kept literally.
+ */
+internal fun percentDecode(value: String): String {
+    if (!value.contains('%')) return value
+    val bytes = mutableListOf<Byte>()
+    val out = StringBuilder()
+    fun flushBytes() {
+        if (bytes.isNotEmpty()) {
+            out.append(String(bytes.toByteArray(), Charsets.UTF_8))
+            bytes.clear()
+        }
+    }
+    var i = 0
+    while (i < value.length) {
+        val c = value[i]
+        val hex = if (c == '%' && i + 2 <= value.lastIndex) {
+            value.substring(i + 1, i + 3).toIntOrNull(16)
+        } else {
+            null
+        }
+        if (hex != null) {
+            bytes.add(hex.toByte())
+            i += 3
+        } else {
+            flushBytes()
+            out.append(c)
+            i++
+        }
+    }
+    flushBytes()
+    return out.toString()
+}
+
+/**
+ * Finds the distinct relative image links in Markdown source: inline
+ * images whose target carries no scheme. Pure and unit-tested.
+ */
+fun findRelativeImageLinks(markdown: String): List<String> {
+    val pattern = Regex("""!\[[^\]]*\]\(\s*([^\s)]+)""")
+    return pattern.findAll(markdown)
+        .map { it.groupValues[1] }
+        .filter { parseRelativePath(it) != null }
+        .distinct()
+        .toList()
 }
 
 /**
