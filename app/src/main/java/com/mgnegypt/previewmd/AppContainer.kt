@@ -4,6 +4,7 @@ import android.content.Context
 import android.net.Uri
 import androidx.room.Room
 import kotlinx.coroutines.flow.MutableStateFlow
+import com.mgnegypt.previewmd.data.files.DraftStore
 import com.mgnegypt.previewmd.data.files.FileRepository
 import com.mgnegypt.previewmd.data.recent.AppDatabase
 import com.mgnegypt.previewmd.data.recent.RecentFilesRepository
@@ -30,6 +31,8 @@ class AppContainer(context: Context) {
     )
 
     val fileRepository = FileRepository(appContext)
+
+    val draftStore = DraftStore(appContext)
 
     /**
      * A file the user asked to open from outside the navigation graph

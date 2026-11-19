@@ -236,6 +236,21 @@ class FileRepository(context: Context) {
         }.getOrNull()
     }
 
+    /**
+     * A cheap change fingerprint for a document: (size, lastModified).
+     * Null when the provider cannot supply one or the file is gone.
+     */
+    fun documentFingerprint(uri: Uri): Pair<Long, Long>? = try {
+        val file = DocumentFile.fromSingleUri(appContext, uri)
+        if (file != null && file.exists()) {
+            file.length() to file.lastModified()
+        } else {
+            null
+        }
+    } catch (e: Exception) {
+        null
+    }
+
     private fun queryString(uri: Uri, column: String): String? = try {
         resolver.query(uri, arrayOf(column), null, null, null)?.use { cursor ->
             if (cursor.moveToFirst()) cursor.getString(0) else null
