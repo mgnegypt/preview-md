@@ -6,6 +6,9 @@
          permission is requested anywhere in this app. -->
     <uses-permission android:name="android.permission.INTERNET" />
 
+    <!-- Self-update installs through PackageInstaller (Phase 6). -->
+    <uses-permission android:name="android.permission.REQUEST_INSTALL_PACKAGES" />
+
     <application
         android:name=".PreviewMdApp"
         android:icon="@mipmap/ic_launcher"
@@ -13,6 +16,10 @@
         android:roundIcon="@mipmap/ic_launcher"
         android:supportsRtl="true"
         android:theme="@style/Theme.PreviewMD">
+        <receiver
+            android:name=".data.update.InstallResultReceiver"
+            android:exported="false" />
+
         <activity
             android:name=".MainActivity"
             android:exported="true">
