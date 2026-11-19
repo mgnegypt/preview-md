@@ -113,6 +113,10 @@ dependencies {
     implementation(libs.androidx.compose.material3)
     implementation(libs.androidx.compose.material.icons.extended)
     debugImplementation(libs.androidx.compose.ui.tooling)
+    // Declares androidx.activity.ComponentActivity in the debug manifest,
+    // which the Robolectric Compose tests launch via ActivityScenario
+    // (without it the launch fails with "Unable to resolve activity info").
+    debugImplementation(libs.androidx.compose.ui.test.manifest)
     testImplementation(libs.junit)
     testImplementation(libs.kotlinx.coroutines.test)
     testImplementation(platform(libs.androidx.compose.bom))
