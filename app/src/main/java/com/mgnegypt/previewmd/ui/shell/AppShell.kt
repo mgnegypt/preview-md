@@ -69,7 +69,11 @@ fun AppShell(
 ) {
     val navController = rememberNavController()
     val backStackEntry by navController.currentBackStackEntryAsState()
-    val currentRoute = backStackEntry?.destination?.route
+    // Route checks go through NavDestination.hasRoute, never through
+    // class-name strings: R8 renames classes in release builds, so a
+    // qualifiedName comparison silently stops matching (that is how
+    // the bottom bar vanished from the 1.0.0 release build).
+    val destination = backStackEntry?.destination
     val scope = rememberCoroutineScope()
     var showSheet by remember { mutableStateOf(false) }
 
@@ -124,13 +128,13 @@ fun AppShell(
     }
 
     val selectedIndex = when {
-        currentRoute == ViewerRoute::class.qualifiedName -> 1
-        currentRoute == SettingsRoute::class.qualifiedName -> 2
-        currentRoute == AboutRoute::class.qualifiedName -> 3
+        destination?.hasRoute(ViewerRoute::class) == true -> 1
+        destination?.hasRoute(SettingsRoute::class) == true -> 2
+        destination?.hasRoute(AboutRoute::class) == true -> 3
         else -> 0
     }
-    val showBar = currentRoute == HomeRoute::class.qualifiedName ||
-        currentRoute == ViewerRoute::class.qualifiedName
+    val showBar = destination?.hasRoute(HomeRoute::class) == true ||
+        destination?.hasRoute(ViewerRoute::class) == true
 
     Scaffold(
         modifier = modifier,

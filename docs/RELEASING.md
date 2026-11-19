@@ -53,3 +53,13 @@ Publish a beta whose `.sha256` asset deliberately contains a wrong
 hash, switch the app to the Beta channel, and check for updates: the
 download must be rejected with the checksum error and nothing is
 installed. Replace it with the real release afterwards.
+
+## Release-build pitfall (learned on 1.0.0)
+
+Never identify a navigation destination by comparing
+`destination.route` or any string against `SomeRoute::class.qualifiedName`.
+R8 renames classes in release builds while the stored route string keeps
+the original name, so the comparison silently fails only in release —
+on 1.0.0 this hid the bottom navigation bar (and with it the only path
+to Settings and About). Use `NavDestination.hasRoute(Route::class)`.
+Verify release behavior on a device, not from the debug build.

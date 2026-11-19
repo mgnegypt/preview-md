@@ -3,6 +3,14 @@
 All notable changes to Preview MD. Versions follow the tag format
 `vMAJOR.MINOR.PATCH[-beta.N]`; the newest entry is at the top.
 
+## [1.0.1] - 2026-11-19
+
+- Fixed: the bottom navigation bar was missing from the 1.0.0 release
+  build. The shell compared the current route against class-name
+  strings, which R8 renames in release builds, so the comparison never
+  matched; route checks now use NavDestination.hasRoute. (Debug builds
+  were unaffected, which is why CI never saw it.)
+
 ## [1.0.0] - 2026-11-19
 
 First release.
