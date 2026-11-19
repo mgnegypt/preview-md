@@ -5,6 +5,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.darkColorScheme
 import androidx.compose.material3.lightColorScheme
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.platform.LocalConfiguration
 
 // Fixed custom palette from the design file. Dynamic color is deliberately
 // not used. In both themes the primary action is the ink pill with cream
@@ -58,8 +59,10 @@ fun PreviewMDTheme(
     darkTheme: Boolean = isSystemInDarkTheme(),
     content: @Composable () -> Unit
 ) {
+    val isArabic = LocalConfiguration.current.locales[0].language == "ar"
     MaterialTheme(
         colorScheme = if (darkTheme) DarkColors else LightColors,
+        typography = previewTypography(if (isArabic) CairoFamily else OutfitFamily),
         shapes = PreviewShapes,
         content = content
     )
