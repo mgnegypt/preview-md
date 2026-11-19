@@ -222,7 +222,7 @@ class FileRepository(context: Context) {
             val (ups, downs) = parsed
             if (downs.isEmpty()) return@runCatching null
             var current: DocumentFile? =
-                DocumentFile.fromSingleUri(context, documentUri)?.parentFile
+                DocumentFile.fromSingleUri(appContext, documentUri)?.parentFile
             repeat(ups) {
                 current = current?.parentFile
             }

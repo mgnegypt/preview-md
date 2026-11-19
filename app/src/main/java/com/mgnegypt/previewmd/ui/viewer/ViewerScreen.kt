@@ -36,7 +36,7 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.mgnegypt.previewmd.R
 import com.mgnegypt.previewmd.data.files.FileErrorKind
-import com.mgnegypt.previewmd.ui.components.PillButton
+import com.mgnegypt.previewmd.ui.components.PillButtonPrimary
 import com.mgnegypt.previewmd.ui.components.RoundIconButton
 import com.mgnegypt.previewmd.ui.components.SegmentedPill
 import com.mikepenz.markdown.coil3.Coil3ImageTransformerImpl
@@ -70,14 +70,10 @@ fun ViewerScreen(
                 .padding(horizontal = 16.dp, vertical = 10.dp)
         ) {
             RoundIconButton(
-                onClick = onBack,
-                contentDescription = stringResource(R.string.back)
-            ) {
-                Icon(
-                    imageVector = Icons.AutoMirrored.Filled.ArrowBack,
-                    contentDescription = null
-                )
-            }
+                icon = Icons.AutoMirrored.Filled.ArrowBack,
+                contentDescription = stringResource(R.string.back),
+                onClick = onBack
+            )
             Spacer(modifier = Modifier.width(12.dp))
             Text(
                 text = (state as? ViewerUiState.Content)?.fileName.orEmpty(),
@@ -88,11 +84,10 @@ fun ViewerScreen(
             )
             Spacer(modifier = Modifier.width(12.dp))
             RoundIconButton(
-                onClick = onEdit,
-                contentDescription = stringResource(R.string.viewer_edit)
-            ) {
-                Icon(imageVector = Icons.Filled.Edit, contentDescription = null)
-            }
+                icon = Icons.Filled.Edit,
+                contentDescription = stringResource(R.string.viewer_edit),
+                onClick = onEdit
+            )
         }
 
         Box(
@@ -105,7 +100,7 @@ fun ViewerScreen(
                     stringResource(R.string.viewer_edit)
                 ),
                 selectedIndex = 0,
-                onSelect = { index -> if (index == 1) onEdit() }
+                onSelected = { index -> if (index == 1) onEdit() }
             )
         }
 
@@ -245,9 +240,10 @@ private fun ViewerError(
             color = MaterialTheme.colorScheme.onSurfaceVariant
         )
         Spacer(modifier = Modifier.height(20.dp))
-        PillButton(
+        PillButtonPrimary(
             text = stringResource(R.string.viewer_retry),
-            onClick = onRetry
+            onClick = onRetry,
+            modifier = Modifier.fillMaxWidth()
         )
     }
 }
