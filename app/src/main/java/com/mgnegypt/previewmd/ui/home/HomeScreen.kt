@@ -13,6 +13,9 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.text.BasicTextField
+import androidx.compose.foundation.text.input.TextFieldLineLimits
+import androidx.compose.foundation.text.input.rememberTextFieldState
+import androidx.compose.foundation.text.input.setTextAndPlaceCursorAtEnd
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.DarkMode
 import androidx.compose.material.icons.filled.LightMode
@@ -22,8 +25,10 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.SolidColor
@@ -268,20 +273,29 @@ private fun SearchPill(
                 contentDescription = null,
                 tint = MaterialTheme.colorScheme.onSurfaceVariant
             )
+            val textState = rememberTextFieldState(initialText = query)
+            LaunchedEffect(textState) {
+                snapshotFlow { textState.text.toString() }
+                    .collect { onQueryChange(it) }
+            }
+            LaunchedEffect(query) {
+                if (textState.text.toString() != query) {
+                    textState.setTextAndPlaceCursorAtEnd(query)
+                }
+            }
             BasicTextField(
-                value = query,
-                onValueChange = onQueryChange,
-                singleLine = true,
+                state = textState,
                 textStyle = MaterialTheme.typography.bodyLarge.copy(
                     color = MaterialTheme.colorScheme.onSurface
                 ),
                 cursorBrush = SolidColor(MaterialTheme.colorScheme.onSurface),
+                lineLimits = TextFieldLineLimits.SingleLine,
                 modifier = Modifier
                     .weight(1f)
                     .padding(start = 10.dp),
-                decorationBox = { innerTextField ->
+                decorator = { innerTextField ->
                     Box {
-                        if (query.isEmpty()) {
+                        if (textState.text.isEmpty()) {
                             Text(
                                 text = stringResource(
                                     R.string.home_search_placeholder
