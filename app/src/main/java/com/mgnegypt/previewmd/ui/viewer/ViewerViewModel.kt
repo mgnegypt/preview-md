@@ -36,6 +36,8 @@ class ViewerViewModel(
     private val _state = MutableStateFlow<ViewerUiState>(ViewerUiState.Loading)
     val state: StateFlow<ViewerUiState> = _state.asStateFlow()
 
+    private var hasLoaded = false
+
     init {
         load()
     }
@@ -44,19 +46,38 @@ class ViewerViewModel(
         _state.value = ViewerUiState.Loading
         viewModelScope.launch {
             _state.value = try {
-                val text = files.readText(uri)
-                val resolved = findRelativeImageLinks(text).mapNotNull { link ->
-                    files.resolveSibling(uri, link)?.let { link to it }
-                }.toMap()
-                ViewerUiState.Content(
-                    fileName = files.displayName(uri),
-                    markdown = text,
-                    imageLinks = resolved
-                )
+                buildContent().also { hasLoaded = true }
             } catch (e: FileAccessException) {
                 ViewerUiState.Error(e.kind)
             }
         }
+    }
+
+    /**
+     * Silent reload when the viewer returns to the foreground, so edits
+     * made in the editor (or by another app) show without a spinner.
+     */
+    fun refresh() {
+        if (!hasLoaded) return
+        viewModelScope.launch {
+            try {
+                _state.value = buildContent()
+            } catch (e: FileAccessException) {
+                _state.value = ViewerUiState.Error(e.kind)
+            }
+        }
+    }
+
+    private suspend fun buildContent(): ViewerUiState.Content {
+        val text = files.readText(uri)
+        val resolved = findRelativeImageLinks(text).mapNotNull { link ->
+            files.resolveSibling(uri, link)?.let { link to it }
+        }.toMap()
+        return ViewerUiState.Content(
+            fileName = files.displayName(uri),
+            markdown = text,
+            imageLinks = resolved
+        )
     }
 
     /** Resolves a clicked relative link to a document URI, if reachable. */

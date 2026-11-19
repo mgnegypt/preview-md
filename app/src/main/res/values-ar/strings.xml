@@ -74,4 +74,27 @@
     <string name="viewer_error_permission">صلاحية الوصول للملف ده ضاعت. افتحه تاني من الملفات عشان تدي الصلاحية.</string>
     <string name="viewer_error_not_found">الملف ده مبقاش موجود.</string>
     <string name="viewer_error_generic">مش قادر أفتح الملف ده.</string>
+    <string name="editor_ok">OK</string>
+    <string name="editor_save">حفظ</string>
+    <string name="editor_discard">تجاهل</string>
+    <string name="editor_cancel">إلغاء</string>
+    <string name="editor_unsaved_title">تعديلات مش محفوظة</string>
+    <string name="editor_unsaved_message">عندك تعديلات لسه متحفظتش. تحفظها قبل ما تطلع؟</string>
+    <string name="editor_save_failed_title">الحفظ فشل</string>
+    <string name="editor_error_save_permission">صلاحية الوصول للملف ضاعت، فالتعديلات متحفظتش. نصك موجود في المحرر وكمسودة.</string>
+    <string name="editor_error_save_not_found">الملف ده مبقاش موجود، فالتعديلات متحفظتش. نصك موجود في المحرر وكمسودة.</string>
+    <string name="editor_error_save_generic">التعديلات متحفظتش. نصك موجود في المحرر وكمسودة.</string>
+    <string name="editor_external_title">الملف اتغير بره</string>
+    <string name="editor_external_message">الملف ده اتغير من تطبيق تاني وانت بتعدل فيه. تحمل النسخة الجديدة، ولا تخلي نسختك وتكتب فوقها لما تحفظ؟</string>
+    <string name="editor_reload">تحميل الجديد</string>
+    <string name="editor_keep_mine">خلي نسختي</string>
+    <string name="editor_highlight_off">تمييز الصياغة مقفول للملفات الكبيرة أوي.</string>
+    <string name="editor_bold">عريض</string>
+    <string name="editor_italic">مائل</string>
+    <string name="editor_heading">عنوان</string>
+    <string name="editor_link">رابط</string>
+    <string name="editor_code">كود</string>
+    <string name="editor_list">قائمة</string>
+    <string name="editor_undo">تراجع</string>
+    <string name="editor_redo">إعادة</string>
 </resources>

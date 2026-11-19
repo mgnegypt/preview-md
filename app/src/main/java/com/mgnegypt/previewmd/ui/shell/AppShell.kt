@@ -223,8 +223,21 @@ fun AppShell(
                     }
                 )
             }
-            composable<EditorRoute> {
-                PlaceholderScreen(title = stringResource(R.string.editor_title))
+            composable<EditorRoute> { backStackEntry ->
+                val route = backStackEntry.toRoute<EditorRoute>()
+                val editorViewModel: com.mgnegypt.previewmd.ui.editor.EditorViewModel =
+                    viewModel(
+                        key = "editor-${route.uri}",
+                        factory = com.mgnegypt.previewmd.ui.editor.EditorViewModel.Factory(
+                            files = container.fileRepository,
+                            drafts = container.draftStore,
+                            uriString = route.uri
+                        )
+                    )
+                com.mgnegypt.previewmd.ui.editor.EditorScreen(
+                    viewModel = editorViewModel,
+                    onBack = { navController.popBackStack() }
+                )
             }
             composable<SettingsRoute> {
                 val settingsViewModel: SettingsViewModel = viewModel(
