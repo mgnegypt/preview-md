@@ -1,18 +1,30 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="app_name">Preview MD</string>
-    <string name="design_gallery_title">Design gallery</string>
-    <string name="gallery_light">Light</string>
-    <string name="gallery_dark">Dark</string>
-    <string name="gallery_primary_action">Get started</string>
-    <string name="gallery_secondary_action">Open a file</string>
-    <string name="gallery_accent_action">OK</string>
-    <string name="gallery_segment_recent">Recent</string>
-    <string name="gallery_segment_folders">Folders</string>
-    <string name="gallery_updates">Updates</string>
-    <string name="gallery_auto_updates">Automatic updates</string>
-    <string name="gallery_channel_stable">Stable</string>
-    <string name="gallery_channel_beta">Beta</string>
-    <string name="gallery_update_available">Update 1.1.0 is available</string>
-    <string name="gallery_download">Download and install</string>
+    <string name="back">Back</string>
+
+    <string name="welcome_headline">Read Markdown like GitHub does.</string>
+    <string name="welcome_body">Open any README.md and see it rendered, then edit it in place.</string>
+    <string name="welcome_get_started">Get started</string>
+    <string name="welcome_open_file">Open a file</string>
+
+    <string name="home_title">Your files</string>
+    <string name="viewer_title">Preview</string>
+    <string name="editor_title">Edit</string>
+    <string name="about_title">About</string>
+
+    <string name="settings_title">Settings</string>
+    <string name="settings_appearance">Appearance</string>
+    <string name="theme_light">Light</string>
+    <string name="theme_dark">Dark</string>
+    <string name="theme_system">System</string>
+    <string name="settings_language">Language</string>
+    <string name="language_english">English</string>
+    <string name="language_arabic">العربية</string>
+    <string name="settings_updates">Updates</string>
+    <string name="settings_version">Version %1$s</string>
+    <string name="settings_auto_updates">Automatic updates</string>
+    <string name="settings_channel">Release channel</string>
+    <string name="channel_stable">Stable</string>
+    <string name="channel_beta">Beta</string>
 </resources>
