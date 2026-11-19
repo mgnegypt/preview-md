@@ -236,6 +236,10 @@ private fun UpdateCheckSection(
                 text = stringResource(R.string.update_installed),
                 style = MaterialTheme.typography.bodyLarge
             )
+            PillButtonPrimary(
+                text = stringResource(R.string.update_check),
+                onClick = onCheck
+            )
         }
 
         else -> {
