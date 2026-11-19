@@ -1,6 +1,7 @@
 package com.mgnegypt.previewmd.data.files
 
 import android.content.Context
+import android.content.Intent
 import android.database.Cursor
 import android.net.Uri
 import android.provider.DocumentsContract
@@ -44,6 +45,18 @@ class FileRepository(context: Context) {
 
     private val appContext = context.applicationContext
     private val resolver get() = appContext.contentResolver
+
+    /**
+     * Takes a persistable read+write permission for a picked document or
+     * tree, so access survives process death and restarts. Fails silently
+     * for grants that cannot be persisted (for example some VIEW intents);
+     * the temporary grant still covers the current session.
+     */
+    fun takePersistablePermission(uri: Uri) {
+        val flags = Intent.FLAG_GRANT_READ_URI_PERMISSION or
+            Intent.FLAG_GRANT_WRITE_URI_PERMISSION
+        runCatching { resolver.takePersistableUriPermission(uri, flags) }
+    }
 
     suspend fun readText(uri: Uri): String = withContext(Dispatchers.IO) {
         try {

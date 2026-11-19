@@ -3,6 +3,8 @@ package com.mgnegypt.previewmd.ui
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.Surface
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.rememberCoroutineScope
@@ -40,6 +42,19 @@ fun PreviewMdRoot(container: AppContainer) {
                     // surface is shown for the few frames this takes.
                 }
                 !state.onboardingDone -> {
+                    val openDocumentLauncher = rememberLauncherForActivityResult(
+                        ActivityResultContracts.OpenDocument()
+                    ) { uri ->
+                        if (uri != null) {
+                            scope.launch {
+                                container.settingsRepository
+                                    .setOnboardingDone(true)
+                            }
+                            // The shell intakes and shows the file once
+                            // onboarding flips and it appears.
+                            container.requestOpen(uri.toString())
+                        }
+                    }
                     WelcomeScreen(
                         onGetStarted = {
                             scope.launch {
@@ -47,11 +62,9 @@ fun PreviewMdRoot(container: AppContainer) {
                             }
                         },
                         onOpenFile = {
-                            // Phase 3 inserts the file picker before Home;
-                            // the onboarding outcome is the same.
-                            scope.launch {
-                                container.settingsRepository.setOnboardingDone(true)
-                            }
+                            openDocumentLauncher.launch(
+                                arrayOf("text/markdown", "text/plain", "*/*")
+                            )
                         }
                     )
                 }
