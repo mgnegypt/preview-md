@@ -1,0 +1,28 @@
+# Gradle
+.gradle/
+build/
+out/
+
+# Android
+*/build/
+local.properties
+captures/
+.externalNativeBuild/
+.cxx/
+
+# Signing material: never committed, in any form
+*.keystore
+*.jks
+keystore.properties
+
+# IDE
+.idea/
+*.iml
+.vscode/
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Kotlin
+*.class
