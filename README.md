@@ -11,8 +11,17 @@ GitHub does. Open any `.md` file, see it rendered, and edit it in place.
 
 ## Status
 
-Under construction, phase by phase. The build is produced entirely by
-GitHub Actions; see the CI workflow for the current state.
+Current release: see the GitHub Releases page. The build is produced
+entirely by GitHub Actions; pushing to `main` runs the CI workflow.
+
+## Updates
+
+The app updates itself from GitHub Releases: Settings > Updates can
+check manually, and with automatic updates on it checks at most once a
+day. Downloads are verified against the release's SHA-256 checksum
+before anything is installed, and Android always shows its own install
+confirmation. The Stable channel follows regular releases; the Beta
+channel also sees prereleases.
 
 ## Installing
 
@@ -26,8 +35,8 @@ the first time; that is expected for apps distributed outside Google Play.
 Nothing is built on a developer machine. Pushing to `main` runs lint,
 unit tests and a debug APK build in CI. Pushing a `v*` tag produces the
 signed release. See `docs/VERSIONS.md` for the verified toolchain and
-library versions, and `docs/RELEASING.md` (added with the release
-pipeline) for the release procedure.
+library versions, and `docs/RELEASING.md` for the release procedure,
+including the signing-key warning.
 
 ## License
 
