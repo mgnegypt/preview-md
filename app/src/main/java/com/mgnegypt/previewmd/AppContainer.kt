@@ -1,6 +1,7 @@
 package com.mgnegypt.previewmd
 
 import android.content.Context
+import com.mgnegypt.previewmd.data.settings.SettingsRepository
 
 /**
  * Manual dependency container, created once by [PreviewMdApp].
@@ -8,4 +9,6 @@ import android.content.Context
  */
 class AppContainer(context: Context) {
     val appContext: Context = context.applicationContext
+
+    val settingsRepository = SettingsRepository(appContext)
 }
