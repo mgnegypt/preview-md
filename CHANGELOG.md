@@ -3,6 +3,23 @@
 All notable changes to Preview MD. Versions follow the tag format
 `vMAJOR.MINOR.PATCH[-beta.N]`; the newest entry is at the top.
 
+## [1.0.4] - 2026-11-20
+
+- New: the app folder. Set it up once (Settings, or when the first
+  save or new file asks) by picking Download; the app keeps a
+  "Preview MD" folder inside it. New files are created there, and
+  saving a file that lives anywhere else writes the edited copy into
+  the folder under the same name and continues on the copy — the
+  original file is never changed.
+- Fixed: images in the viewer could fail invisibly (the renderer
+  library's default image elements show an empty box on error).
+  Images are now rendered by the app itself: a loading placeholder
+  with the alt text, the image at its natural aspect on success, and
+  a visible "image unavailable" placeholder on error.
+- Fixed: the Settings slot in the bottom bar showed the light-mode
+  sun icon; it now shows the settings gear.
+  All three items were reported by the developer from on-device use.
+
 ## [1.0.3] - 2026-11-19
 
 - Fixed: the Check for updates button disappeared after an update was
