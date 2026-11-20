@@ -236,6 +236,66 @@ class FileRepository(context: Context) {
         }.getOrNull()
     }
 
+    /** Deletes the document itself. False when the provider refuses. */
+    suspend fun deleteDocument(uri: Uri): Boolean =
+        withContext(Dispatchers.IO) {
+            runCatching {
+                DocumentsContract.deleteDocument(resolver, uri)
+            }.getOrDefault(false)
+        }
+
+    /**
+     * Duplicates [uri] beside itself, as "name (1).ext" (first free
+     * number). Null when the parent folder is not reachable or not
+     * writable through the grants the app holds.
+     */
+    suspend fun duplicateBeside(uri: Uri): Uri? =
+        withContext(Dispatchers.IO) {
+            runCatching {
+                val parent = DocumentFile.fromSingleUri(appContext, uri)
+                    ?.parentFile ?: return@runCatching null
+                duplicateInto(parent, uri)
+            }.getOrNull()
+        }
+
+    /** Duplicates [uri] into [folderUri], keeping its name if free. */
+    suspend fun duplicateIntoFolder(uri: Uri, folderUri: Uri): Uri? =
+        withContext(Dispatchers.IO) {
+            runCatching {
+                val folder = DocumentFile.fromSingleUri(
+                    appContext,
+                    folderUri
+                ) ?: return@runCatching null
+                duplicateInto(folder, uri)
+            }.getOrNull()
+        }
+
+    private fun duplicateInto(parent: DocumentFile, uri: Uri): Uri? {
+        if (!parent.canWrite()) return null
+        val source = DocumentFile.fromSingleUri(appContext, uri) ?: return null
+        val name = source.name ?: return null
+        val existing = parent.listFiles().mapNotNull { it.name }.toSet()
+        val created = parent.createFile(
+            resolver.getType(uri) ?: "text/markdown",
+            duplicateName(existing, name)
+        ) ?: return null
+        return if (copyBytes(uri, created.uri)) {
+            created.uri
+        } else {
+            runCatching {
+                DocumentsContract.deleteDocument(resolver, created.uri)
+            }
+            null
+        }
+    }
+
+    private fun copyBytes(from: Uri, to: Uri): Boolean = runCatching {
+        val input = resolver.openInputStream(from) ?: return false
+        val output = resolver.openOutputStream(to, "wt") ?: return false
+        input.use { i -> output.use { o -> i.copyTo(o) } }
+        true
+    }.getOrDefault(false)
+
     /**
      * A cheap change fingerprint for a document: (size, lastModified).
      * Null when the provider cannot supply one or the file is gone.
@@ -329,6 +389,24 @@ class FileRepository(context: Context) {
 /** Pure document-id check behind [FileRepository.isInsideFolder]. */
 fun isDocumentInsideFolder(fileDocumentId: String, folderDocumentId: String): Boolean =
     fileDocumentId.startsWith("$folderDocumentId/")
+
+/**
+ * The name for a duplicate of [name] inside a folder whose current
+ * names are [existing]: the name itself when free, otherwise
+ * "base (1).ext", "base (2).ext", ... Pure and unit-tested.
+ */
+fun duplicateName(existing: Set<String>, name: String): String {
+    if (name !in existing) return name
+    val dot = name.lastIndexOf('.')
+    val base = if (dot > 0) name.substring(0, dot) else name
+    val extension = if (dot > 0) name.substring(dot) else ""
+    var number = 1
+    while (true) {
+        val candidate = "$base ($number)$extension"
+        if (candidate !in existing) return candidate
+        number++
+    }
+}
 
 /**
  * Splits a relative Markdown link into the number of ".." steps above

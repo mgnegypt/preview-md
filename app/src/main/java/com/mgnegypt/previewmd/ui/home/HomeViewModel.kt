@@ -14,7 +14,9 @@ import com.mgnegypt.previewmd.data.settings.ThemeMode
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
@@ -36,6 +38,16 @@ data class HomeUiState(
     val folders: List<FolderSection> = emptyList(),
     val themeMode: ThemeMode = ThemeMode.SYSTEM
 )
+
+/** One-shot feedback for the swipe actions, shown as a snackbar. */
+sealed interface HomeMessage {
+    data object Deleted : HomeMessage
+    data object DeleteFailed : HomeMessage
+    data object Copied : HomeMessage
+    data object CopiedToAppFolder : HomeMessage
+    data object CopyFailed : HomeMessage
+    data object CopyNeedsAppFolder : HomeMessage
+}
 
 @OptIn(kotlinx.coroutines.ExperimentalCoroutinesApi::class)
 class HomeViewModel(
@@ -82,6 +94,13 @@ class HomeViewModel(
         initialValue = HomeUiState()
     )
 
+    private val _message = MutableStateFlow<HomeMessage?>(null)
+    val message: StateFlow<HomeMessage?> = _message.asStateFlow()
+
+    fun onMessageShown() {
+        _message.value = null
+    }
+
     init {
         viewModelScope.launch {
             // Drop recents whose permission was revoked since last run.
@@ -90,14 +109,17 @@ class HomeViewModel(
             }
         }
         viewModelScope.launch {
-            recentFiles.folderRoots.collect { roots ->
-                folderSections.value = roots.map { root ->
-                    val children = runCatching {
-                        files.listMarkdownFiles(Uri.parse(root.uri))
-                    }.getOrDefault(emptyList())
-                    FolderSection(root = root, files = children)
-                }
-            }
+            recentFiles.folderRoots.collect { refreshFolderSections() }
+        }
+    }
+
+    private suspend fun refreshFolderSections() {
+        val roots = recentFiles.folderRoots.first()
+        folderSections.value = roots.map { root ->
+            val children = runCatching {
+                files.listMarkdownFiles(Uri.parse(root.uri))
+            }.getOrDefault(emptyList())
+            FolderSection(root = root, files = children)
         }
     }
 
