@@ -42,6 +42,7 @@ import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -70,6 +71,7 @@ import com.mgnegypt.previewmd.data.files.FileErrorKind
 import com.mgnegypt.previewmd.ui.components.PillButtonAccent
 import com.mgnegypt.previewmd.ui.components.PillButtonPrimary
 import com.mgnegypt.previewmd.ui.components.RoundIconButton
+import com.mgnegypt.previewmd.ui.theme.AccentBlue
 import com.mgnegypt.previewmd.ui.theme.Cream
 import com.mgnegypt.previewmd.ui.theme.DeepBlack
 import com.mgnegypt.previewmd.ui.theme.MonoFamily
@@ -436,22 +438,38 @@ private fun EditorBody(
                 }
             }
             Spacer(modifier = Modifier.width(10.dp))
-            BasicTextField(
-                state = state,
-                modifier = Modifier.weight(1f),
-                textStyle = TextStyle(
-                    fontFamily = MonoFamily,
-                    fontSize = 15.sp,
-                    lineHeight = 22.sp,
-                    color = MaterialTheme.colorScheme.onSurface
-                ),
-                cursorBrush = SolidColor(
-                    MaterialTheme.colorScheme.onSurface
-                ),
-                lineLimits = TextFieldLineLimits.MultiLine(),
-                outputTransformation = transformation,
-                onTextLayout = { getResult -> layout = getResult() }
+            // Selection must be unmissable in both themes. The
+            // default selection colours derive from the theme's
+            // primary, which this app sets to Ink in BOTH schemes
+            // (it is the pill colour) — so in dark mode the handles
+            // and the selection tint were near-black on the dark
+            // editor surface, effectively invisible. onSurface is
+            // Ink on light and Cream on dark (always contrasted),
+            // and the blue tint reads clearly on both surfaces.
+            val selectionColors = TextSelectionColors(
+                handleColor = MaterialTheme.colorScheme.onSurface,
+                backgroundColor = AccentBlue.copy(alpha = 0.55f)
             )
+            CompositionLocalProvider(
+                LocalTextSelectionColors provides selectionColors
+            ) {
+                BasicTextField(
+                    state = state,
+                    modifier = Modifier.weight(1f),
+                    textStyle = TextStyle(
+                        fontFamily = MonoFamily,
+                        fontSize = 15.sp,
+                        lineHeight = 22.sp,
+                        color = MaterialTheme.colorScheme.onSurface
+                    ),
+                    cursorBrush = SolidColor(
+                        MaterialTheme.colorScheme.onSurface
+                    ),
+                    lineLimits = TextFieldLineLimits.MultiLine(),
+                    outputTransformation = transformation,
+                    onTextLayout = { getResult -> layout = getResult() }
+                )
+            }
         }
     }
 }
