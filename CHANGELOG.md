@@ -5,6 +5,10 @@ All notable changes to Preview MD. Versions follow the tag format
 
 ## [1.0.6] - 2026-11-20
 
+- Fixed: the Home swipe actions (Delete / Copy) looked partial
+  behind the file card. Each action now fills the whole area
+  behind the card — same height, same corners, no gaps — with its
+  icon and label at the revealed edge.
 - New: every code block in the viewer has a GitHub-style copy
   button at its top end — tap it to copy the block's code to the
   clipboard; the icon flips to a check mark briefly.

@@ -52,6 +52,7 @@ import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.SolidColor
 import androidx.compose.ui.graphics.vector.ImageVector
@@ -480,32 +481,37 @@ private fun SwipeableActions(
         scope.launch { state.animateTo(SwipeAnchor.Closed) }
     }
     Box {
+        // Each action layer fills the WHOLE area behind the card —
+        // same height, same corners — so the revealed action always
+        // looks complete, with no gaps at any drag position. Its
+        // icon and label rest in the 84 dp zone at the revealed
+        // edge. Which layer is visible follows the live drag offset,
+        // switched in the draw phase via graphicsLayer alpha (the
+        // offset may not be read during composition).
         Box(
             modifier = Modifier
                 .matchParentSize()
                 .clip(RoundedCornerShape(28.dp))
         ) {
-            SwipeStrip(
+            SwipeActionLayer(
                 color = MaterialTheme.colorScheme.error,
                 contentColor = MaterialTheme.colorScheme.onError,
                 icon = Icons.Filled.Delete,
                 label = stringResource(R.string.home_action_delete),
-                onClick = {
-                    close()
-                    onDelete()
-                },
-                modifier = Modifier.align(Alignment.CenterStart)
+                alignment = Alignment.CenterStart,
+                modifier = Modifier.graphicsLayer {
+                    alpha = if (state.requireOffset() >= 0f) 1f else 0f
+                }
             )
-            SwipeStrip(
+            SwipeActionLayer(
                 color = AccentBlue,
                 contentColor = Ink,
                 icon = Icons.Filled.ContentCopy,
                 label = stringResource(R.string.home_action_copy),
-                onClick = {
-                    close()
-                    onCopy()
-                },
-                modifier = Modifier.align(Alignment.CenterEnd)
+                alignment = Alignment.CenterEnd,
+                modifier = Modifier.graphicsLayer {
+                    alpha = if (state.requireOffset() < 0f) 1f else 0f
+                }
             )
         }
         Box(
@@ -527,27 +533,56 @@ private fun SwipeableActions(
                 )
             }
         }
+        // The layers carry no click handling (the hidden one must
+        // never eat a tap), so the open action's zone gets its own
+        // target above everything, only while it rests open.
+        if (state.currentValue == SwipeAnchor.DeleteOpen) {
+            Box(
+                modifier = Modifier
+                    .align(Alignment.CenterStart)
+                    .width(SwipeActionWidth)
+                    .fillMaxHeight()
+                    .clickable {
+                        close()
+                        onDelete()
+                    }
+            )
+        }
+        if (state.currentValue == SwipeAnchor.CopyOpen) {
+            Box(
+                modifier = Modifier
+                    .align(Alignment.CenterEnd)
+                    .width(SwipeActionWidth)
+                    .fillMaxHeight()
+                    .clickable {
+                        close()
+                        onCopy()
+                    }
+            )
+        }
     }
 }
 
 @Composable
-private fun SwipeStrip(
+private fun SwipeActionLayer(
     color: Color,
     contentColor: Color,
     icon: ImageVector,
     label: String,
-    onClick: () -> Unit,
+    alignment: Alignment,
     modifier: Modifier = Modifier
 ) {
     Box(
         modifier = modifier
-            .width(SwipeActionWidth)
-            .fillMaxHeight()
+            .fillMaxSize()
             .background(color)
-            .clickable(onClick = onClick),
-        contentAlignment = Alignment.Center
     ) {
-        Column(horizontalAlignment = Alignment.CenterHorizontally) {
+        Column(
+            horizontalAlignment = Alignment.CenterHorizontally,
+            modifier = Modifier
+                .align(alignment)
+                .width(SwipeActionWidth)
+        ) {
             Icon(
                 imageVector = icon,
                 contentDescription = label,
