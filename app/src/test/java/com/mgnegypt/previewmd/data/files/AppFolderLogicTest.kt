@@ -1,6 +1,8 @@
 package com.mgnegypt.previewmd.data.files
 
+import org.junit.Assert.assertEquals
 import org.junit.Assert.assertFalse
+import org.junit.Assert.assertNull
 import org.junit.Assert.assertTrue
 import org.junit.Test
 
@@ -57,6 +59,37 @@ class AppFolderLogicTest {
     fun parentFolder_isNotInside() {
         assertFalse(
             isDocumentInsideFolder("primary:Download/notes.md", folder)
+        )
+    }
+
+    @Test
+    fun parentOfDirectChild_isTheFolder() {
+        assertEquals(
+            folder,
+            parentDocumentId("primary:Download/Preview MD/notes.md", folder)
+        )
+    }
+
+    @Test
+    fun parentOfNestedChild_isTheSubfolder() {
+        assertEquals(
+            "primary:Download/Preview MD/sub",
+            parentDocumentId(
+                "primary:Download/Preview MD/sub/notes.md",
+                folder
+            )
+        )
+    }
+
+    @Test
+    fun parentOfTheRootItself_isNull() {
+        assertNull(parentDocumentId(folder, folder))
+    }
+
+    @Test
+    fun parentOutsideTheTree_isNull() {
+        assertNull(
+            parentDocumentId("primary:Download/Other/notes.md", folder)
         )
     }
 }

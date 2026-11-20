@@ -3,6 +3,21 @@
 All notable changes to Preview MD. Versions follow the tag format
 `vMAJOR.MINOR.PATCH[-beta.N]`; the newest entry is at the top.
 
+## [1.0.7] - 2026-11-20
+
+- Fixed: nothing could be written into the app folder — creating
+  a new file, saving an edited copy of an outside file, and the
+  Home swipe Copy all silently did nothing. The folder helpers
+  wrapped the folder URI as a single document, whose createFile
+  always fails; they now go through the folder's tree grant, and
+  duplicating a file beside itself resolves its parent folder
+  through that same grant. Found by on-device testing.
+- Fixed: the editor selection colours announced in 1.0.6 never
+  reached the 1.0.6 build — the commit carried their imports but
+  the EditorBody change itself was left uncommitted. It is
+  applied now, so selection handles and tint are contrasted in
+  both themes as intended.
+
 ## [1.0.6] - 2026-11-20
 
 - Fixed: text selection in the editor was effectively invisible

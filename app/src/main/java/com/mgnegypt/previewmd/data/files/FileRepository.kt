@@ -221,8 +221,7 @@ class FileRepository(context: Context) {
             val parsed = parseRelativePath(relativePath) ?: return@runCatching null
             val (ups, downs) = parsed
             if (downs.isEmpty()) return@runCatching null
-            var current: DocumentFile? =
-                DocumentFile.fromSingleUri(appContext, documentUri)?.parentFile
+            var current: DocumentFile? = parentFolderOf(documentUri)
             repeat(ups) {
                 current = current?.parentFile
             }
@@ -252,8 +251,8 @@ class FileRepository(context: Context) {
     suspend fun duplicateBeside(uri: Uri): Uri? =
         withContext(Dispatchers.IO) {
             runCatching {
-                val parent = DocumentFile.fromSingleUri(appContext, uri)
-                    ?.parentFile ?: return@runCatching null
+                val parent = parentFolderOf(uri)
+                    ?: return@runCatching null
                 duplicateInto(parent, uri)
             }.getOrNull()
         }
@@ -262,10 +261,8 @@ class FileRepository(context: Context) {
     suspend fun duplicateIntoFolder(uri: Uri, folderUri: Uri): Uri? =
         withContext(Dispatchers.IO) {
             runCatching {
-                val folder = DocumentFile.fromSingleUri(
-                    appContext,
-                    folderUri
-                ) ?: return@runCatching null
+                val folder = folderDocument(folderUri)
+                    ?: return@runCatching null
                 duplicateInto(folder, uri)
             }.getOrNull()
         }
@@ -359,8 +356,7 @@ class FileRepository(context: Context) {
     suspend fun findInFolder(folderUri: Uri, name: String): Uri? =
         withContext(Dispatchers.IO) {
             runCatching {
-                DocumentFile.fromSingleUri(appContext, folderUri)
-                    ?.findFile(name)?.uri
+                folderDocument(folderUri)?.findFile(name)?.uri
             }.getOrNull()
         }
 
@@ -368,10 +364,50 @@ class FileRepository(context: Context) {
     suspend fun createInFolder(folderUri: Uri, name: String): Uri? =
         withContext(Dispatchers.IO) {
             runCatching {
-                DocumentFile.fromSingleUri(appContext, folderUri)
+                folderDocument(folderUri)
                     ?.createFile("text/markdown", name)?.uri
             }.getOrNull()
         }
+
+    /**
+     * The [DocumentFile] for a folder. Folder URIs in this app carry
+     * the tree segment (they come from [appFolderDocument] or from
+     * documents inside that tree), and only a tree-backed
+     * DocumentFile can list or create children:
+     * DocumentFile.fromSingleUri wraps the URI in a
+     * SingleDocumentFile, whose createFile throws
+     * UnsupportedOperationException and whose findFile finds
+     * nothing, so every folder write through it silently failed.
+     */
+    private fun folderDocument(folderUri: Uri): DocumentFile? =
+        if (DocumentsContract.isTreeUri(folderUri)) {
+            DocumentFile.fromTreeUri(appContext, folderUri)
+        } else {
+            DocumentFile.fromSingleUri(appContext, folderUri)
+        }
+
+    /**
+     * The folder containing [uri], through the tree grant the URI
+     * itself carries. Null for URIs without a tree segment (a file
+     * picked on its own grants access to that file only, never to
+     * its folder) and for the tree root itself.
+     */
+    private fun parentFolderOf(uri: Uri): DocumentFile? {
+        if (!DocumentsContract.isTreeUri(uri)) return null
+        val documentId = runCatching {
+            DocumentsContract.getDocumentId(uri)
+        }.getOrNull() ?: return null
+        val treeId = runCatching {
+            DocumentsContract.getTreeDocumentId(uri)
+        }.getOrNull() ?: return null
+        val parentId = parentDocumentId(documentId, treeId) ?: return null
+        val authority = uri.authority ?: return null
+        val parentTreeUri = DocumentsContract.buildTreeDocumentUri(
+            authority,
+            parentId
+        )
+        return DocumentFile.fromTreeUri(appContext, parentTreeUri)
+    }
 
     /**
      * True when [fileUri] is a document directly or transitively inside
@@ -398,6 +434,20 @@ class FileRepository(context: Context) {
 /** Pure document-id check behind [FileRepository.isInsideFolder]. */
 fun isDocumentInsideFolder(fileDocumentId: String, folderDocumentId: String): Boolean =
     fileDocumentId.startsWith("$folderDocumentId/")
+
+/**
+ * The parent document id of [documentId] inside the tree rooted at
+ * [treeDocumentId]: the id with its last segment removed. Null when
+ * [documentId] is the tree root itself or lies outside the tree —
+ * the app holds no grant above the root it was given. Pure and
+ * unit-tested.
+ */
+fun parentDocumentId(documentId: String, treeDocumentId: String): String? {
+    if (documentId == treeDocumentId) return null
+    if (!documentId.startsWith("$treeDocumentId/")) return null
+    val parent = documentId.substringBeforeLast('/')
+    return parent.ifEmpty { null }
+}
 
 /**
  * The name for a duplicate of [name] inside a folder whose current
