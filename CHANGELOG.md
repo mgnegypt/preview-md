@@ -3,6 +3,16 @@
 All notable changes to Preview MD. Versions follow the tag format
 `vMAJOR.MINOR.PATCH[-beta.N]`; the newest entry is at the top.
 
+## [1.0.6] - 2026-11-20
+
+- New: every code block in the viewer has a GitHub-style copy
+  button at its top end — tap it to copy the block's code to the
+  clipboard; the icon flips to a check mark briefly.
+- New: the About screen's accent shapes are alive. They drift
+  slowly and randomly behind the developer card — sliding out from
+  behind the photo and passing behind the social squares, always
+  behind the content, never over it.
+
 ## [1.0.5] - 2026-11-20
 
 - Fixed: the app folder setup could not be completed as guided.
