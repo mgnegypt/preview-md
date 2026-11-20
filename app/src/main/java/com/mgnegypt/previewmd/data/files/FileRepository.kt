@@ -258,7 +258,77 @@ class FileRepository(context: Context) {
     } catch (e: Exception) {
         null
     }
+
+    // ---- the app folder -----------------------------------------------
+    //
+    // The app keeps its own folder, "Preview MD", inside a tree the user
+    // granted once (Download). New files are born there, and saving a
+    // file that lives anywhere else writes the edited copy there instead
+    // of touching the original.
+
+    /**
+     * Finds the app folder inside [treeUri], creating it when missing.
+     * Returns the folder's document URI, or null when the tree is not
+     * reachable.
+     */
+    suspend fun appFolderDocument(treeUri: Uri): Uri? =
+        withContext(Dispatchers.IO) {
+            runCatching {
+                val root = DocumentFile.fromTreeUri(appContext, treeUri)
+                    ?: return@runCatching null
+                if (!root.exists() || !root.isDirectory) return@runCatching null
+                val existing = root.findFile(APP_FOLDER_NAME)
+                when {
+                    existing != null && existing.isDirectory -> existing.uri
+                    existing != null -> null
+                    else -> root.createDirectory(APP_FOLDER_NAME)?.uri
+                }
+            }.getOrNull()
+        }
+
+    /** The document URI of the child of [folderUri] named [name], if any. */
+    suspend fun findInFolder(folderUri: Uri, name: String): Uri? =
+        withContext(Dispatchers.IO) {
+            runCatching {
+                DocumentFile.fromSingleUri(appContext, folderUri)
+                    ?.findFile(name)?.uri
+            }.getOrNull()
+        }
+
+    /** Creates a Markdown file named [name] inside [folderUri]. */
+    suspend fun createInFolder(folderUri: Uri, name: String): Uri? =
+        withContext(Dispatchers.IO) {
+            runCatching {
+                DocumentFile.fromSingleUri(appContext, folderUri)
+                    ?.createFile("text/markdown", name)?.uri
+            }.getOrNull()
+        }
+
+    /**
+     * True when [fileUri] is a document directly or transitively inside
+     * [folderUri]. Both must come from the same provider; the comparison
+     * is on document ids, so it works for single-document and tree URIs
+     * alike.
+     */
+    fun isInsideFolder(fileUri: Uri, folderUri: Uri): Boolean {
+        if (fileUri.authority != folderUri.authority) return false
+        val fileId = runCatching {
+            DocumentsContract.getDocumentId(fileUri)
+        }.getOrNull() ?: return false
+        val folderId = runCatching {
+            DocumentsContract.getDocumentId(folderUri)
+        }.getOrNull() ?: return false
+        return isDocumentInsideFolder(fileId, folderId)
+    }
+
+    companion object {
+        const val APP_FOLDER_NAME = "Preview MD"
+    }
 }
+
+/** Pure document-id check behind [FileRepository.isInsideFolder]. */
+fun isDocumentInsideFolder(fileDocumentId: String, folderDocumentId: String): Boolean =
+    fileDocumentId.startsWith("$folderDocumentId/")
 
 /**
  * Splits a relative Markdown link into the number of ".." steps above

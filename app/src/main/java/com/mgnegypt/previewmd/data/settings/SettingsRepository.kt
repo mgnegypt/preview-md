@@ -33,7 +33,14 @@ data class SettingsState(
     val channel: ReleaseChannel = ReleaseChannel.STABLE,
     val onboardingDone: Boolean = false,
     /** Epoch millis of the last update check (auto or manual); 0 = never. */
-    val lastUpdateCheckAt: Long = 0
+    val lastUpdateCheckAt: Long = 0,
+    /**
+     * The granted tree URI of the folder the user picked as the parent of
+     * the app's own folder (Download, holding "Preview MD"). Null until
+     * the app folder is set up; while null, new files and edits of files
+     * outside the folder cannot be saved.
+     */
+    val appFolderTreeUri: String? = null
 )
 
 private val Context.settingsDataStore: DataStore<Preferences> by preferencesDataStore(
@@ -65,7 +72,8 @@ class SettingsRepository(
                 ReleaseChannel.entries.firstOrNull { it.name == stored }
             } ?: ReleaseChannel.STABLE,
             onboardingDone = prefs[KEY_ONBOARDING_DONE] ?: false,
-            lastUpdateCheckAt = prefs[KEY_LAST_UPDATE_CHECK] ?: 0
+            lastUpdateCheckAt = prefs[KEY_LAST_UPDATE_CHECK] ?: 0,
+            appFolderTreeUri = prefs[KEY_APP_FOLDER_TREE]
         )
     }
 
@@ -95,6 +103,16 @@ class SettingsRepository(
         dataStore.edit { it[KEY_ONBOARDING_DONE] = done }
     }
 
+    suspend fun setAppFolderTreeUri(uri: String?) {
+        dataStore.edit { prefs ->
+            if (uri == null) {
+                prefs.remove(KEY_APP_FOLDER_TREE)
+            } else {
+                prefs[KEY_APP_FOLDER_TREE] = uri
+            }
+        }
+    }
+
     private companion object {
         val KEY_THEME = stringPreferencesKey("theme_mode")
         val KEY_LANGUAGE = stringPreferencesKey("language_tag")
@@ -102,5 +120,6 @@ class SettingsRepository(
         val KEY_CHANNEL = stringPreferencesKey("release_channel")
         val KEY_ONBOARDING_DONE = booleanPreferencesKey("onboarding_done")
         val KEY_LAST_UPDATE_CHECK = longPreferencesKey("last_update_check_at")
+        val KEY_APP_FOLDER_TREE = stringPreferencesKey("app_folder_tree_uri")
     }
 }
