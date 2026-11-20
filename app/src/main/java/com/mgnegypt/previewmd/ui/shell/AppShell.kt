@@ -15,12 +15,15 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.CreateNewFolder
 import androidx.compose.material.icons.filled.FolderOpen
 import androidx.compose.material.icons.filled.NoteAdd
+import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ModalBottomSheet
+import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.material3.SheetValue
 import androidx.compose.material3.rememberBottomSheetState
 import androidx.compose.runtime.Composable
@@ -55,12 +58,13 @@ import com.mgnegypt.previewmd.ui.navigation.SettingsRoute
 import com.mgnegypt.previewmd.ui.navigation.ViewerRoute
 import com.mgnegypt.previewmd.ui.settings.SettingsScreen
 import com.mgnegypt.previewmd.ui.settings.SettingsViewModel
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 
 /**
  * The navigation shell: hosts the pickers (open document, open tree,
- * create document), the + action sheet, the floating bottom bar and the
- * NavHost. All six screens are real since Phase 7.
+ * app folder setup), the + action sheet, the floating bottom bar and
+ * the NavHost. All six screens are real since Phase 7.
  */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -102,14 +106,30 @@ fun AppShell(
             }
         }
     }
-    val createDocumentLauncher = rememberLauncherForActivityResult(
-        ActivityResultContracts.CreateDocument("text/markdown")
-    ) { uri ->
-        if (uri != null) {
-            scope.launch { container.intakeOpenedFile(uri) }
-            navController.navigate(ViewerRoute(uri = uri.toString())) {
-                launchSingleTop = true
+    // New files are born in the app folder. Without a configured folder,
+    // the + sheet first runs the one-time setup (pick Download), then
+    // asks for the file name.
+    val settingsState by container.settingsRepository.settings
+        .collectAsStateWithLifecycle()
+    var showNameDialog by remember { mutableStateOf(false) }
+    var pendingNewFile by remember { mutableStateOf(false) }
+    val appFolderSetupLauncher = rememberLauncherForActivityResult(
+        ActivityResultContracts.OpenDocumentTree()
+    ) { treeUri ->
+        if (treeUri != null) {
+            scope.launch {
+                container.fileRepository.takePersistablePermission(treeUri)
+                container.settingsRepository.setAppFolderTreeUri(
+                    treeUri.toString()
+                )
+                container.fileRepository.appFolderDocument(treeUri)
+                if (pendingNewFile) {
+                    pendingNewFile = false
+                    showNameDialog = true
+                }
             }
+        } else {
+            pendingNewFile = false
         }
     }
 
@@ -296,7 +316,12 @@ fun AppShell(
                     label = stringResource(R.string.sheet_new_file),
                     onClick = {
                         showSheet = false
-                        createDocumentLauncher.launch("untitled.md")
+                        if (settingsState.appFolderTreeUri != null) {
+                            showNameDialog = true
+                        } else {
+                            pendingNewFile = true
+                            appFolderSetupLauncher.launch(null)
+                        }
                     }
                 )
                 SheetAction(
@@ -319,6 +344,65 @@ fun AppShell(
                 )
             }
         }
+    }
+
+    if (showNameDialog) {
+        var name by remember { mutableStateOf("") }
+        AlertDialog(
+            onDismissRequest = { showNameDialog = false },
+            title = { Text(text = stringResource(R.string.new_file_title)) },
+            text = {
+                OutlinedTextField(
+                    value = name,
+                    onValueChange = { name = it },
+                    label = {
+                        Text(text = stringResource(R.string.new_file_name_label))
+                    },
+                    singleLine = true
+                )
+            },
+            confirmButton = {
+                TextButton(
+                    enabled = name.isNotBlank(),
+                    onClick = {
+                        val trimmed = name.trim()
+                        val fileName = if (
+                            trimmed.endsWith(".md", ignoreCase = true) ||
+                            trimmed.endsWith(".markdown", ignoreCase = true)
+                        ) {
+                            trimmed
+                        } else {
+                            "$trimmed.md"
+                        }
+                        showNameDialog = false
+                        scope.launch {
+                            val treeString = container.settingsRepository
+                                .settings.first().appFolderTreeUri
+                                ?: return@launch
+                            val folder = container.fileRepository
+                                .appFolderDocument(Uri.parse(treeString))
+                                ?: return@launch
+                            val created = container.fileRepository
+                                .findInFolder(folder, fileName)
+                                ?: container.fileRepository
+                                    .createInFolder(folder, fileName)
+                                ?: return@launch
+                            container.intakeOpenedFile(created)
+                            navController.navigate(
+                                EditorRoute(uri = created.toString())
+                            ) { launchSingleTop = true }
+                        }
+                    }
+                ) {
+                    Text(text = stringResource(R.string.new_file_create))
+                }
+            },
+            dismissButton = {
+                TextButton(onClick = { showNameDialog = false }) {
+                    Text(text = stringResource(R.string.editor_cancel))
+                }
+            }
+        )
     }
 }
 
