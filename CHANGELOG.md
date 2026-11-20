@@ -5,6 +5,12 @@ All notable changes to Preview MD. Versions follow the tag format
 
 ## [1.0.6] - 2026-11-20
 
+- Fixed: text selection in the editor was effectively invisible
+  in dark mode — the selection colours derive from the theme's
+  primary, which is Ink in both schemes, so the handles and tint
+  were near-black on the dark editor surface. The editor now uses
+  contrasted selection colours (onSurface handles, blue tint) in
+  both themes.
 - Fixed: the Home swipe actions (Delete / Copy) looked partial
   behind the file card. Each action now fills the whole area
   behind the card — same height, same corners, no gaps — with its
