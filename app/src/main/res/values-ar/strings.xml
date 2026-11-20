@@ -81,6 +81,7 @@
     <string name="viewer_edit">تعديل</string>
     <string name="viewer_empty">هذا الملف فارغ</string>
     <string name="viewer_image_unavailable">الصورة غير متاحة</string>
+    <string name="viewer_copy_code">نسخ الكود</string>
     <string name="settings_app_folder_title">مجلد التطبيق</string>
     <string name="settings_app_folder_desc">الملفات الجديدة والتعديلات بتتحفظ في Download/Preview MD، فالملفات الأصلية عمرها ما تتغير. للإعداد: من المنتقي افتح Download واعمل مجلد باسم «Preview MD» واختاره.</string>
     <string name="settings_app_folder_value">Download/Preview MD</string>

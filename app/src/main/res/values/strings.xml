@@ -69,6 +69,7 @@
     <string name="viewer_edit">Edit</string>
     <string name="viewer_empty">This file is empty</string>
     <string name="viewer_image_unavailable">Image unavailable</string>
+    <string name="viewer_copy_code">Copy code</string>
     <string name="settings_app_folder_title">App folder</string>
     <string name="settings_app_folder_desc">New files and edits are saved in Download/Preview MD, so the original files are never changed. To set up: in the picker, open Download, create a folder named “Preview MD”, and choose it.</string>
     <string name="settings_app_folder_value">Download/Preview MD</string>

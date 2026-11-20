@@ -31,8 +31,6 @@ import com.mikepenz.markdown.compose.elements.MarkdownCheckBox
 import com.mikepenz.markdown.compose.elements.MarkdownHeader
 import com.mikepenz.markdown.compose.elements.MarkdownTable
 import com.mikepenz.markdown.compose.elements.MarkdownTableHeader
-import com.mikepenz.markdown.compose.elements.highlightedCodeBlock
-import com.mikepenz.markdown.compose.elements.highlightedCodeFence
 import com.mikepenz.markdown.m3.markdownColor
 import com.mikepenz.markdown.m3.markdownTypography
 import com.mikepenz.markdown.model.MarkdownColors
@@ -164,6 +162,18 @@ fun viewerMarkdownComponents(imageLinks: Map<String, String>) = markdownComponen
             }
         )
     },
-    codeFence = highlightedCodeFence,
-    codeBlock = highlightedCodeBlock
+    codeFence = { model ->
+        CopyableCodeFence(
+            content = model.content,
+            node = model.node,
+            style = model.typography.code
+        )
+    },
+    codeBlock = { model ->
+        CopyableCodeBlock(
+            content = model.content,
+            node = model.node,
+            style = model.typography.code
+        )
+    }
 )

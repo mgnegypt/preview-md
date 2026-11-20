@@ -12,7 +12,9 @@ integration provides, what the app customises, and the known limits.
 - Headings H1-H6, paragraphs, bold, italic, bold-italic, strikethrough
 - Inline code and fenced/indented code blocks with syntax highlighting
   for common languages (Kotlin, Java, JavaScript, Python, JSON, XML,
-  Bash and others provided by Highlights)
+  Bash and others provided by Highlights). Every code block carries a
+  copy button at its top end (GitHub-style) that copies the block's
+  code to the clipboard
 - Links (inline, reference-style and autolinks) and images (inline and
   reference-style), including remote http(s) images and SVG (badges)
 - Blockquotes, horizontal rules, hard line breaks
