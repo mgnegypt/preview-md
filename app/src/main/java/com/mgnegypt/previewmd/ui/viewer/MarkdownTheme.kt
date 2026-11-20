@@ -76,7 +76,17 @@ fun viewerMarkdownTypography(): MarkdownTypography = markdownTypography(
 )
 
 @Composable
-fun viewerMarkdownComponents() = markdownComponents(
+fun viewerMarkdownComponents(imageLinks: Map<String, String>) = markdownComponents(
+    image = { model ->
+        MarkdownBlockImage(
+            content = model.content,
+            node = model.node,
+            imageLinks = imageLinks
+        )
+    },
+    inlineImage = { model ->
+        MarkdownInlineImage(link = model.content, imageLinks = imageLinks)
+    },
     heading1 = { model ->
         Column {
             MarkdownHeader(model.content, model.node, model.typography.h1)

@@ -26,8 +26,6 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.geometry.Size
-import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.platform.LocalUriHandler
 import androidx.compose.ui.platform.UriHandler
 import androidx.compose.ui.res.stringResource
@@ -43,8 +41,6 @@ import com.mgnegypt.previewmd.ui.components.RoundIconButton
 import com.mgnegypt.previewmd.ui.components.SegmentedPill
 import com.mikepenz.markdown.coil3.Coil3ImageTransformerImpl
 import com.mikepenz.markdown.m3.Markdown
-import com.mikepenz.markdown.model.ImageData
-import com.mikepenz.markdown.model.ImageTransformer
 import kotlinx.coroutines.launch
 
 /**
@@ -187,29 +183,13 @@ private fun ViewerContent(
             }
         }
     }
-    val imageTransformer = remember(content.imageLinks) {
-        object : ImageTransformer {
-            @Composable
-            override fun transform(link: String): ImageData? {
-                return Coil3ImageTransformerImpl.transform(
-                    content.imageLinks[link] ?: link
-                )
-            }
-
-            @Composable
-            override fun intrinsicSize(painter: Painter): Size {
-                return Coil3ImageTransformerImpl.intrinsicSize(painter)
-            }
-        }
-    }
-
     CompositionLocalProvider(LocalUriHandler provides uriHandler) {
         Markdown(
             content = content.markdown,
             colors = viewerMarkdownColors(),
             typography = viewerMarkdownTypography(),
-            components = viewerMarkdownComponents(),
-            imageTransformer = imageTransformer,
+            components = viewerMarkdownComponents(content.imageLinks),
+            imageTransformer = Coil3ImageTransformerImpl,
             modifier = modifier
                 .verticalScroll(rememberScrollState())
                 .padding(horizontal = 20.dp, vertical = 8.dp)

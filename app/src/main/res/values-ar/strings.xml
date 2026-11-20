@@ -70,6 +70,7 @@
     <string name="viewer_preview">معاينة</string>
     <string name="viewer_edit">تعديل</string>
     <string name="viewer_empty">هذا الملف فارغ</string>
+    <string name="viewer_image_unavailable">الصورة غير متاحة</string>
     <string name="viewer_retry">حاول تاني</string>
     <string name="viewer_error_permission">صلاحية الوصول للملف ده ضاعت. افتحه تاني من الملفات عشان تدي الصلاحية.</string>
     <string name="viewer_error_not_found">الملف ده مبقاش موجود.</string>

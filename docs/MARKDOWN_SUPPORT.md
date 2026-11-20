@@ -36,12 +36,20 @@ integration provides, what the app customises, and the known limits.
 
 ## Images
 
+- Images are rendered by the app itself (Coil 3 SubcomposeAsyncImage
+  against the app-wide image loader), not by the renderer library's
+  default elements: the defaults paint through a painter whose loading
+  failure is an invisible empty box. The app's elements show a loading
+  placeholder with the alt text, the image at its natural aspect on
+  success, and a visible "image unavailable" placeholder on error —
+  an image never fails silently
 - http(s) images load over the network (INTERNET permission; the app
-  requests no storage permission)
+  requests no storage permission), including SVG badges
 - Relative image paths are resolved against the opened document's folder
   (including `../` segments) when the folder is reachable through the
   document's provider, and loaded from the resulting document URI
-- Unresolvable images degrade to their alt text
+- Images written as raw HTML (`<img>` tags) are not rendered — raw HTML
+  is not parsed (see the limits section)
 
 ## Links
 

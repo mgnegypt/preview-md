@@ -58,6 +58,7 @@
     <string name="viewer_preview">Preview</string>
     <string name="viewer_edit">Edit</string>
     <string name="viewer_empty">This file is empty</string>
+    <string name="viewer_image_unavailable">Image unavailable</string>
     <string name="viewer_retry">Try again</string>
     <string name="viewer_error_permission">Access to this file was lost. Open it again from Files to grant access.</string>
     <string name="viewer_error_not_found">This file no longer exists.</string>
