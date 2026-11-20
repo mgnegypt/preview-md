@@ -92,13 +92,17 @@ fun EditorScreen(
     var showUnsavedDialog by remember { mutableStateOf(false) }
 
     // Saving a file from outside the app folder needs the one-time app
-    // folder setup; the picker result resumes the interrupted save.
+    // folder setup; the picker result resumes the interrupted save
+    // through the stored continuation.
+    var onSetupOutcome by remember {
+        mutableStateOf<((EditorSaveOutcome) -> Unit)?>(null)
+    }
     val setupLauncher = rememberLauncherForActivityResult(
         ActivityResultContracts.OpenDocumentTree()
     ) { treeUri ->
         if (treeUri != null) {
             viewModel.onAppFolderPicked(treeUri) { outcome ->
-                handleSaveOutcome(outcome)
+                onSetupOutcome?.invoke(outcome)
             }
         }
     }
@@ -110,7 +114,11 @@ fun EditorScreen(
                 if (now != initialUri) onRetargeted(now) else onBack()
             }
 
-            EditorSaveOutcome.NEEDS_FOLDER_SETUP -> setupLauncher.launch(null)
+            EditorSaveOutcome.NEEDS_FOLDER_SETUP -> {
+                onSetupOutcome = { resumed -> handleSaveOutcome(resumed) }
+                setupLauncher.launch(null)
+            }
+
             EditorSaveOutcome.FAILED -> Unit
         }
     }

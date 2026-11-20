@@ -48,6 +48,7 @@ import androidx.navigation.NavDestination.Companion.hasRoute
 import androidx.navigation.compose.rememberNavController
 import com.mgnegypt.previewmd.AppContainer
 import com.mgnegypt.previewmd.R
+import com.mgnegypt.previewmd.data.settings.SettingsState
 import com.mgnegypt.previewmd.ui.components.FloatingBottomBar
 import com.mgnegypt.previewmd.ui.home.HomeScreen
 import com.mgnegypt.previewmd.ui.home.HomeViewModel
@@ -110,7 +111,7 @@ fun AppShell(
     // the + sheet first runs the one-time setup (pick Download), then
     // asks for the file name.
     val settingsState by container.settingsRepository.settings
-        .collectAsStateWithLifecycle()
+        .collectAsStateWithLifecycle(initialValue = SettingsState())
     var showNameDialog by remember { mutableStateOf(false) }
     var pendingNewFile by remember { mutableStateOf(false) }
     val appFolderSetupLauncher = rememberLauncherForActivityResult(
