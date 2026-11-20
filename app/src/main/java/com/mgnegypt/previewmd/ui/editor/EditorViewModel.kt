@@ -12,9 +12,11 @@ import com.mgnegypt.previewmd.data.files.DraftStore
 import com.mgnegypt.previewmd.data.files.FileAccessException
 import com.mgnegypt.previewmd.data.files.FileErrorKind
 import com.mgnegypt.previewmd.data.files.FileRepository
+import com.mgnegypt.previewmd.data.settings.SettingsRepository
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
@@ -32,6 +34,15 @@ data class EditorUiState(
     val externalChange: Boolean = false
 )
 
+/** How a save attempt ended; the screen acts on the setup case. */
+enum class EditorSaveOutcome {
+    SAVED,
+    FAILED,
+
+    /** The app folder is not set up yet; the screen must run setup. */
+    NEEDS_FOLDER_SETUP
+}
+
 /**
  * Editor state: the text lives in a [TextFieldState] held here so it
  * survives rotation; a debounced draft in app-private storage survives
@@ -42,10 +53,12 @@ data class EditorUiState(
 class EditorViewModel(
     private val files: FileRepository,
     private val drafts: DraftStore,
+    private val settings: SettingsRepository,
     uriString: String
 ) : ViewModel() {
 
-    private val uri: Uri = Uri.parse(uriString)
+    /** The document being edited; retargeted to the app-folder copy on save. */
+    private var uri: Uri = Uri.parse(uriString)
 
     val textState = TextFieldState()
 
@@ -164,26 +177,69 @@ class EditorViewModel(
 
     // ---- saving -------------------------------------------------------
 
-    fun save(onResult: (Boolean) -> Unit) {
+    /**
+     * Saves into the app folder: a file already inside it is written in
+     * place; a file from anywhere else is copied there under the same
+     * name (the original is never touched) and the editor retargets to
+     * the copy, so later saves and the preview work on the copy. Without
+     * a configured app folder nothing is written and the screen is told
+     * to run the one-time setup first.
+     */
+    fun save(onResult: (EditorSaveOutcome) -> Unit) {
         if (_uiState.value.saving) return
         val current = textState.text.toString()
         _uiState.update { it.copy(saving = true, saveError = null) }
         viewModelScope.launch {
+            val treeString = settings.settings.first().appFolderTreeUri
+            if (treeString == null) {
+                _uiState.update { it.copy(saving = false) }
+                onResult(EditorSaveOutcome.NEEDS_FOLDER_SETUP)
+                return@launch
+            }
             try {
-                files.writeText(uri, current)
-                val readBack = files.readText(uri)
+                val folder = files.appFolderDocument(Uri.parse(treeString))
+                    ?: throw FileAccessException(FileErrorKind.IO_FAILURE)
+                val name = _uiState.value.fileName
+                    .ifBlank { files.displayName(uri) }
+                val target = if (files.isInsideFolder(uri, folder)) {
+                    uri
+                } else {
+                    files.findInFolder(folder, name)
+                        ?: files.createInFolder(folder, name)
+                        ?: throw FileAccessException(FileErrorKind.IO_FAILURE)
+                }
+                val previousUri = uri
+                files.writeText(target, current)
+                val readBack = files.readText(target)
                 if (readBack != current) {
                     throw FileAccessException(FileErrorKind.IO_FAILURE)
                 }
+                uri = target
                 originalText = current
-                fingerprint = files.documentFingerprint(uri)
-                drafts.delete(uri.toString())
+                fingerprint = files.documentFingerprint(target)
+                drafts.delete(previousUri.toString())
+                if (target != previousUri) drafts.delete(target.toString())
                 _uiState.update { it.copy(saving = false, dirty = false) }
-                onResult(true)
+                onResult(EditorSaveOutcome.SAVED)
             } catch (e: FileAccessException) {
                 _uiState.update { it.copy(saving = false, saveError = e.kind) }
-                onResult(false)
+                onResult(EditorSaveOutcome.FAILED)
             }
+        }
+    }
+
+    /** The document the editor is currently bound to. */
+    fun currentUriString(): String = uri.toString()
+
+    /**
+     * Persists a freshly granted tree as the app folder's parent and
+     * retries the save that asked for the setup.
+     */
+    fun onAppFolderPicked(treeUri: Uri, onResult: (EditorSaveOutcome) -> Unit) {
+        files.takePersistablePermission(treeUri)
+        viewModelScope.launch {
+            settings.setAppFolderTreeUri(treeUri.toString())
+            save(onResult)
         }
     }
 
@@ -251,11 +307,12 @@ class EditorViewModel(
     class Factory(
         private val files: FileRepository,
         private val drafts: DraftStore,
+        private val settings: SettingsRepository,
         private val uriString: String
     ) : ViewModelProvider.Factory {
         @Suppress("UNCHECKED_CAST")
         override fun <T : ViewModel> create(modelClass: Class<T>): T {
-            return EditorViewModel(files, drafts, uriString) as T
+            return EditorViewModel(files, drafts, settings, uriString) as T
         }
     }
 

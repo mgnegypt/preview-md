@@ -235,12 +235,24 @@ fun AppShell(
                         factory = com.mgnegypt.previewmd.ui.editor.EditorViewModel.Factory(
                             files = container.fileRepository,
                             drafts = container.draftStore,
+                            settings = container.settingsRepository,
                             uriString = route.uri
                         )
                     )
                 com.mgnegypt.previewmd.ui.editor.EditorScreen(
                     viewModel = editorViewModel,
-                    onBack = { navController.popBackStack() }
+                    initialUri = route.uri,
+                    onBack = { navController.popBackStack() },
+                    onRetargeted = { newUri ->
+                        // The save copied the file into the app folder:
+                        // replace the original's viewer with the copy's.
+                        navController.navigate(ViewerRoute(uri = newUri)) {
+                            popUpTo(ViewerRoute(uri = route.uri)) {
+                                inclusive = true
+                            }
+                            launchSingleTop = true
+                        }
+                    }
                 )
             }
             composable<SettingsRoute> {

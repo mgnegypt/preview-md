@@ -1,6 +1,8 @@
 package com.mgnegypt.previewmd.ui.editor
 
 import androidx.activity.compose.BackHandler
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -81,11 +83,37 @@ import com.mgnegypt.previewmd.ui.theme.MonoFamily
 @Composable
 fun EditorScreen(
     viewModel: EditorViewModel,
+    initialUri: String,
     onBack: () -> Unit,
+    onRetargeted: (String) -> Unit,
     modifier: Modifier = Modifier
 ) {
     val ui by viewModel.uiState.collectAsStateWithLifecycle()
     var showUnsavedDialog by remember { mutableStateOf(false) }
+
+    // Saving a file from outside the app folder needs the one-time app
+    // folder setup; the picker result resumes the interrupted save.
+    val setupLauncher = rememberLauncherForActivityResult(
+        ActivityResultContracts.OpenDocumentTree()
+    ) { treeUri ->
+        if (treeUri != null) {
+            viewModel.onAppFolderPicked(treeUri) { outcome ->
+                handleSaveOutcome(outcome)
+            }
+        }
+    }
+
+    fun handleSaveOutcome(outcome: EditorSaveOutcome) {
+        when (outcome) {
+            EditorSaveOutcome.SAVED -> {
+                val now = viewModel.currentUriString()
+                if (now != initialUri) onRetargeted(now) else onBack()
+            }
+
+            EditorSaveOutcome.NEEDS_FOLDER_SETUP -> setupLauncher.launch(null)
+            EditorSaveOutcome.FAILED -> Unit
+        }
+    }
 
     LifecycleEventEffect(Lifecycle.Event.ON_RESUME) {
         viewModel.checkExternalChange()
@@ -136,7 +164,7 @@ fun EditorScreen(
                 text = stringResource(R.string.editor_ok),
                 onClick = {
                     if (ui.dirty) {
-                        viewModel.save { ok -> if (ok) onBack() }
+                        viewModel.save { outcome -> handleSaveOutcome(outcome) }
                     } else {
                         onBack()
                     }
@@ -237,7 +265,7 @@ fun EditorScreen(
                     TextButton(
                         onClick = {
                             showUnsavedDialog = false
-                            viewModel.save { ok -> if (ok) onBack() }
+                            viewModel.save { outcome -> handleSaveOutcome(outcome) }
                         }
                     ) {
                         Text(text = stringResource(R.string.editor_save))
