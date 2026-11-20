@@ -1,13 +1,13 @@
 package com.mgnegypt.previewmd.ui.home
 
 import android.net.Uri
-import androidx.compose.animation.core.spring
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.gestures.AnchoredDraggableState
 import androidx.compose.foundation.gestures.DraggableAnchors
 import androidx.compose.foundation.gestures.Orientation
 import androidx.compose.foundation.gestures.anchoredDraggable
+import androidx.compose.foundation.gestures.animateTo
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -56,12 +56,10 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.SolidColor
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalDensity
-import androidx.compose.ui.platform.LocalLayoutDirection
 import androidx.compose.ui.res.pluralStringResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.IntOffset
-import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.mgnegypt.previewmd.R
@@ -467,7 +465,6 @@ private fun SwipeableActions(
 ) {
     val density = LocalDensity.current
     val actionWidthPx = with(density) { SwipeActionWidth.toPx() }
-    val isRtl = LocalLayoutDirection.current == LayoutDirection.Rtl
     val state = remember(actionWidthPx) {
         AnchoredDraggableState(
             initialValue = SwipeAnchor.Closed,
@@ -475,12 +472,7 @@ private fun SwipeableActions(
                 SwipeAnchor.DeleteOpen at actionWidthPx
                 SwipeAnchor.Closed at 0f
                 SwipeAnchor.CopyOpen at -actionWidthPx
-            },
-            positionalThreshold = { distance -> distance * 0.5f },
-            velocityThreshold = { with(density) { 125.dp.toPx() } },
-            snapAnimationSpec = spring(),
-            decayAnimationSpec = androidx.compose.animation.core
-                .exponentialDecay()
+            }
         )
     }
     val scope = rememberCoroutineScope()
@@ -523,8 +515,7 @@ private fun SwipeableActions(
                 }
                 .anchoredDraggable(
                     state = state,
-                    orientation = Orientation.Horizontal,
-                    reverseDirection = isRtl
+                    orientation = Orientation.Horizontal
                 )
         ) {
             content()
