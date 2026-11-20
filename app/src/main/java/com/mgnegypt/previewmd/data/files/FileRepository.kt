@@ -331,12 +331,21 @@ class FileRepository(context: Context) {
      * Returns the folder's document URI, or null when the tree is not
      * reachable.
      */
+    /**
+     * The app folder for a granted tree. Android forbids granting
+     * Download itself, so the one-time setup normally grants the
+     * "Preview MD" folder inside Download directly — a tree that IS
+     * the app folder is used as-is. For any other granted tree, the
+     * folder is found or created inside it. Null when a non-folder
+     * with that name exists or the tree is unreachable.
+     */
     suspend fun appFolderDocument(treeUri: Uri): Uri? =
         withContext(Dispatchers.IO) {
             runCatching {
                 val root = DocumentFile.fromTreeUri(appContext, treeUri)
                     ?: return@runCatching null
                 if (!root.exists() || !root.isDirectory) return@runCatching null
+                if (root.name == APP_FOLDER_NAME) return@runCatching root.uri
                 val existing = root.findFile(APP_FOLDER_NAME)
                 when {
                     existing != null && existing.isDirectory -> existing.uri

@@ -3,6 +3,14 @@
 All notable changes to Preview MD. Versions follow the tag format
 `vMAJOR.MINOR.PATCH[-beta.N]`; the newest entry is at the top.
 
+## [1.0.5] - 2026-11-20
+
+- Fixed: the app folder setup could not be completed as guided.
+  Android forbids granting the Download folder itself ("Can't use
+  this folder"), so the setup now grants the "Preview MD" folder
+  inside Download directly, and the Settings card spells out those
+  steps. Found by on-device testing of 1.0.4.
+
 ## [1.0.4] - 2026-11-20
 
 - New: swipe actions on Home file cards — drag a card right to
