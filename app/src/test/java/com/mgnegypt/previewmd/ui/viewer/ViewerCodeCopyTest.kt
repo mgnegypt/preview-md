@@ -4,6 +4,7 @@ import android.content.ClipboardManager
 import android.content.Context
 import androidx.activity.ComponentActivity
 import androidx.compose.ui.test.assertIsDisplayed
+import androidx.compose.ui.test.hasContentDescription
 import androidx.compose.ui.test.junit4.createAndroidComposeRule
 import androidx.compose.ui.test.onNodeWithContentDescription
 import androidx.compose.ui.test.performClick
@@ -45,6 +46,13 @@ class ViewerCodeCopyTest {
             }
         }
 
+        // The renderer parses asynchronously (rememberMarkdownState
+        // runs its parser in a LaunchedEffect), so wait for the code
+        // block — and its copy button — to actually appear.
+        composeRule.waitUntilExactlyOneExists(
+            hasContentDescription("Copy code"),
+            timeoutMillis = 10_000
+        )
         composeRule.onNodeWithContentDescription("Copy code")
             .assertIsDisplayed()
             .performClick()
