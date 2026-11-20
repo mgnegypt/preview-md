@@ -59,6 +59,15 @@
     <string name="viewer_edit">Edit</string>
     <string name="viewer_empty">This file is empty</string>
     <string name="viewer_image_unavailable">Image unavailable</string>
+    <string name="settings_app_folder_title">App folder</string>
+    <string name="settings_app_folder_desc">New files and edits are saved in Download/Preview MD, so the original files are never changed.</string>
+    <string name="settings_app_folder_value">Download/Preview MD</string>
+    <string name="settings_app_folder_unset">Not set up yet</string>
+    <string name="settings_app_folder_setup">Set up</string>
+    <string name="settings_app_folder_change">Change</string>
+    <string name="new_file_title">New file</string>
+    <string name="new_file_name_label">File name</string>
+    <string name="new_file_create">Create</string>
     <string name="viewer_retry">Try again</string>
     <string name="viewer_error_permission">Access to this file was lost. Open it again from Files to grant access.</string>
     <string name="viewer_error_not_found">This file no longer exists.</string>

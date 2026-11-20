@@ -51,6 +51,7 @@ class SettingsRepositoryTest {
         assertTrue(state.autoUpdate)
         assertEquals(ReleaseChannel.STABLE, state.channel)
         assertFalse(state.onboardingDone)
+        assertNull(state.appFolderTreeUri)
     }
 
     @Test
@@ -67,6 +68,17 @@ class SettingsRepositoryTest {
         assertFalse(state.autoUpdate)
         assertEquals(ReleaseChannel.BETA, state.channel)
         assertTrue(state.onboardingDone)
+    }
+
+    @Test
+    fun appFolderTreeUri_roundTripsAndClears() = runTest {
+        repository.setAppFolderTreeUri("content://tree/primary%3ADownload")
+        assertEquals(
+            "content://tree/primary%3ADownload",
+            repository.settings.first().appFolderTreeUri
+        )
+        repository.setAppFolderTreeUri(null)
+        assertNull(repository.settings.first().appFolderTreeUri)
     }
 
     @Test

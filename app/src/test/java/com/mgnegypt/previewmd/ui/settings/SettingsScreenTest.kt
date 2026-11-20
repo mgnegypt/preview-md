@@ -8,6 +8,7 @@ import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
 import androidx.datastore.preferences.core.PreferenceDataStoreFactory
 import androidx.test.core.app.ApplicationProvider
+import com.mgnegypt.previewmd.data.files.FileRepository
 import com.mgnegypt.previewmd.data.settings.SettingsRepository
 import com.mgnegypt.previewmd.data.update.UpdateInstaller
 import com.mgnegypt.previewmd.data.update.UpdateManager
@@ -36,7 +37,7 @@ import org.robolectric.annotation.GraphicsMode
  * room so every node is actually on screen.
  */
 @RunWith(RobolectricTestRunner::class)
-@Config(sdk = [35], qualifiers = "w411dp-h1400dp")
+@Config(sdk = [35], qualifiers = "w411dp-h2200dp")
 @GraphicsMode(GraphicsMode.Mode.NATIVE)
 class SettingsScreenTest {
 
@@ -63,7 +64,11 @@ class SettingsScreenTest {
             installer = UpdateInstaller(),
             settings = settingsRepository
         )
-        val viewModel = SettingsViewModel(settingsRepository, updateManager)
+        val viewModel = SettingsViewModel(
+            settingsRepository,
+            updateManager,
+            FileRepository(context)
+        )
         composeRule.setContent {
             PreviewMDTheme(darkTheme = false) {
                 SettingsScreen(viewModel = viewModel, onBack = {})
@@ -92,6 +97,13 @@ class SettingsScreenTest {
             .assertIsDisplayed()
         composeRule.onNodeWithText("Automatic updates").assertIsDisplayed()
         composeRule.onNodeWithText("Check for updates").assertIsDisplayed()
+    }
+
+    @Test
+    fun appFolderCardShowsSetupWhenUnconfigured() {
+        composeRule.onNodeWithText("App folder").assertIsDisplayed()
+        composeRule.onNodeWithText("Not set up yet").assertIsDisplayed()
+        composeRule.onNodeWithText("Set up").assertIsDisplayed()
     }
 
     @Test

@@ -1,10 +1,12 @@
 package com.mgnegypt.previewmd.ui.settings
 
+import android.net.Uri
 import androidx.appcompat.app.AppCompatDelegate
 import androidx.core.os.LocaleListCompat
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
+import com.mgnegypt.previewmd.data.files.FileRepository
 import com.mgnegypt.previewmd.data.settings.ReleaseChannel
 import com.mgnegypt.previewmd.data.settings.SettingsRepository
 import com.mgnegypt.previewmd.data.settings.SettingsState
@@ -19,7 +21,8 @@ import kotlinx.coroutines.launch
 
 class SettingsViewModel(
     private val repository: SettingsRepository,
-    private val updateManager: UpdateManager
+    private val updateManager: UpdateManager,
+    private val files: FileRepository
 ) : ViewModel() {
 
     val updateState: StateFlow<UpdateUiState> = updateManager.state
@@ -69,16 +72,30 @@ class SettingsViewModel(
         viewModelScope.launch { repository.setChannel(channel) }
     }
 
+    /**
+     * Stores a freshly granted tree as the app folder's parent and makes
+     * sure the "Preview MD" folder exists inside it right away, so a
+     * broken grant surfaces here instead of at the first save.
+     */
+    fun onAppFolderPicked(treeUri: Uri) {
+        files.takePersistablePermission(treeUri)
+        viewModelScope.launch {
+            repository.setAppFolderTreeUri(treeUri.toString())
+            files.appFolderDocument(treeUri)
+        }
+    }
+
     class Factory(
         private val repository: SettingsRepository,
-        private val updateManager: UpdateManager
+        private val updateManager: UpdateManager,
+        private val files: FileRepository
     ) : ViewModelProvider.Factory {
         @Suppress("UNCHECKED_CAST")
         override fun <T : ViewModel> create(modelClass: Class<T>): T {
             require(modelClass.isAssignableFrom(SettingsViewModel::class.java)) {
                 "Unknown ViewModel class: ${modelClass.name}"
             }
-            return SettingsViewModel(repository, updateManager) as T
+            return SettingsViewModel(repository, updateManager, files) as T
         }
     }
 }

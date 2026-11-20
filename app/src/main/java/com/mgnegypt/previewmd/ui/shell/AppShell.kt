@@ -259,7 +259,8 @@ fun AppShell(
                 val settingsViewModel: SettingsViewModel = viewModel(
                     factory = SettingsViewModel.Factory(
                         container.settingsRepository,
-                        container.updateManager
+                        container.updateManager,
+                        container.fileRepository
                     )
                 )
                 SettingsScreen(

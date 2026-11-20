@@ -1,5 +1,7 @@
 package com.mgnegypt.previewmd.ui.settings
 
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -39,6 +41,7 @@ import com.mgnegypt.previewmd.ui.components.ProgressPill
 import com.mgnegypt.previewmd.ui.components.RoundIconButton
 import com.mgnegypt.previewmd.ui.components.SegmentedPill
 import com.mgnegypt.previewmd.ui.components.SettingsCard
+import com.mgnegypt.previewmd.ui.theme.AccentGreen
 import com.mgnegypt.previewmd.ui.theme.AccentPink
 import com.mgnegypt.previewmd.ui.theme.AccentYellow
 import com.mgnegypt.previewmd.ui.theme.Ink
@@ -61,6 +64,11 @@ fun SettingsScreen(
     val versionName = rememberVersionName()
     val currentLanguage = state.languageTag
         ?: LocalConfiguration.current.locales[0].language
+    val appFolderLauncher = rememberLauncherForActivityResult(
+        ActivityResultContracts.OpenDocumentTree()
+    ) { treeUri ->
+        if (treeUri != null) viewModel.onAppFolderPicked(treeUri)
+    }
 
     Column(
         modifier = modifier
@@ -128,6 +136,46 @@ fun SettingsScreen(
                 viewModel.onLanguageChange(if (index == 1) "ar" else "en")
             }
         )
+
+        SettingsCard(
+            color = AccentGreen,
+            modifier = Modifier.padding(top = 8.dp)
+        ) {
+            Text(
+                text = stringResource(R.string.settings_app_folder_title),
+                style = MaterialTheme.typography.titleLarge
+            )
+            Text(
+                text = stringResource(R.string.settings_app_folder_desc),
+                style = MaterialTheme.typography.bodyLarge
+            )
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.SpaceBetween,
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Text(
+                    text = stringResource(
+                        if (state.appFolderTreeUri == null) {
+                            R.string.settings_app_folder_unset
+                        } else {
+                            R.string.settings_app_folder_value
+                        }
+                    ),
+                    style = MaterialTheme.typography.titleMedium
+                )
+                PillButtonPrimary(
+                    text = stringResource(
+                        if (state.appFolderTreeUri == null) {
+                            R.string.settings_app_folder_setup
+                        } else {
+                            R.string.settings_app_folder_change
+                        }
+                    ),
+                    onClick = { appFolderLauncher.launch(null) }
+                )
+            }
+        }
 
         SettingsCard(
             color = AccentYellow,
