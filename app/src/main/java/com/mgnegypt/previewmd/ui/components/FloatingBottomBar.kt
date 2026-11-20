@@ -14,7 +14,7 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Home
-import androidx.compose.material.icons.filled.LightMode
+import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material.icons.filled.Person
 import androidx.compose.material.icons.outlined.Description
 import androidx.compose.material3.Icon
@@ -40,8 +40,8 @@ import com.mgnegypt.previewmd.ui.theme.PreviewMDTheme
 
 /**
  * The design's floating bottom bar: a deep-black pill with four icon slots
- * and a raised pink center action. Slots are Home, Files, Theme and About;
- * the center button is an action (open a file), not a destination.
+ * and a raised pink center action. Slots are Home, Files, Settings and
+ * About; the center button is an action (open a file), not a destination.
  */
 @Composable
 fun FloatingBottomBar(
@@ -93,7 +93,7 @@ fun FloatingBottomBar(
             )
         }
         BarItem(
-            icon = Icons.Filled.LightMode,
+            icon = Icons.Filled.Settings,
             label = stringResource(R.string.settings_title),
             selected = selectedIndex == 2,
             onClick = { onItemSelected(2) }
