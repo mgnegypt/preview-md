@@ -30,6 +30,16 @@
 
     <string name="home_search_placeholder">ابحث في الملفات</string>
     <string name="home_recent">الأخيرة</string>
+    <string name="home_action_delete">حذف</string>
+    <string name="home_action_copy">نسخ</string>
+    <string name="home_delete_title">أحذف الملف ده؟</string>
+    <string name="home_delete_message">ده هيحذف الملف نفسه «%1$s» من جهازك، مش بس شكله من القايمة.</string>
+    <string name="home_msg_deleted">الملف اتحذف</string>
+    <string name="home_msg_delete_failed">مش قادر أحذف الملف ده</string>
+    <string name="home_msg_copied">الملف اتنسخ</string>
+    <string name="home_msg_copied_app_folder">اتنسخ في Preview MD</string>
+    <string name="home_msg_copy_failed">مش قادر أنسخ الملف ده</string>
+    <string name="home_msg_copy_needs_folder">النسخ هنا محتاج مجلد التطبيق — جهّزه من الإعدادات</string>
     <string name="home_folders">المجلدات</string>
     <string name="home_empty_recents">لا توجد ملفات بعد</string>
     <string name="home_empty_recents_body">افتح ملف Markdown وسيظهر هنا.</string>

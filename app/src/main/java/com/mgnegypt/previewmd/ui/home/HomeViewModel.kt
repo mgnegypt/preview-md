@@ -162,6 +162,88 @@ class HomeViewModel(
         }
     }
 
+    // ---- swipe actions --------------------------------------------------
+
+    /** Deletes the actual file behind a recents entry, then its entry. */
+    fun onDeleteRecent(recent: RecentFile) {
+        viewModelScope.launch {
+            if (files.deleteDocument(Uri.parse(recent.uri))) {
+                recentFiles.removeRecent(recent.uri)
+                refreshFolderSections()
+                _message.value = HomeMessage.Deleted
+            } else {
+                _message.value = HomeMessage.DeleteFailed
+            }
+        }
+    }
+
+    /** Deletes a file shown under a granted folder. */
+    fun onDeleteFolderFile(child: TreeChild) {
+        viewModelScope.launch {
+            if (files.deleteDocument(child.uri)) {
+                recentFiles.removeRecent(child.uri.toString())
+                refreshFolderSections()
+                _message.value = HomeMessage.Deleted
+            } else {
+                _message.value = HomeMessage.DeleteFailed
+            }
+        }
+    }
+
+    fun onCopyRecent(recent: RecentFile) {
+        copy(
+            uri = Uri.parse(recent.uri),
+            folderLabel = recent.folderLabel,
+            treeUri = recent.treeUri
+        )
+    }
+
+    fun onCopyFolderFile(child: TreeChild, root: FolderRoot) {
+        copy(uri = child.uri, folderLabel = root.name, treeUri = root.uri)
+    }
+
+    /**
+     * Duplicates beside the original when its folder is writable;
+     * otherwise into the app folder, which is the app's own writable
+     * home. The copy is recorded so it shows in recents.
+     */
+    private fun copy(uri: Uri, folderLabel: String, treeUri: String?) {
+        viewModelScope.launch {
+            val beside = files.duplicateBeside(uri)
+            if (beside != null) {
+                recentFiles.recordOpened(
+                    uri = beside.toString(),
+                    name = files.displayName(beside),
+                    folderLabel = folderLabel,
+                    treeUri = treeUri
+                )
+                refreshFolderSections()
+                _message.value = HomeMessage.Copied
+                return@launch
+            }
+            val treeString = settings.settings.first().appFolderTreeUri
+            val folder = treeString?.let {
+                files.appFolderDocument(Uri.parse(it))
+            }
+            if (folder == null) {
+                _message.value = HomeMessage.CopyNeedsAppFolder
+                return@launch
+            }
+            val copied = files.duplicateIntoFolder(uri, folder)
+            if (copied != null) {
+                recentFiles.recordOpened(
+                    uri = copied.toString(),
+                    name = files.displayName(copied),
+                    folderLabel = FileRepository.APP_FOLDER_NAME,
+                    treeUri = treeString
+                )
+                _message.value = HomeMessage.CopiedToAppFolder
+            } else {
+                _message.value = HomeMessage.CopyFailed
+            }
+        }
+    }
+
     class Factory(
         private val recentFiles: RecentFilesRepository,
         private val files: FileRepository,

@@ -30,6 +30,16 @@
 
     <string name="home_search_placeholder">Search files</string>
     <string name="home_recent">Recent</string>
+    <string name="home_action_delete">Delete</string>
+    <string name="home_action_copy">Copy</string>
+    <string name="home_delete_title">Delete this file?</string>
+    <string name="home_delete_message">This deletes the actual file “%1$s” from your device, not just its entry in the list.</string>
+    <string name="home_msg_deleted">File deleted</string>
+    <string name="home_msg_delete_failed">This file could not be deleted</string>
+    <string name="home_msg_copied">File copied</string>
+    <string name="home_msg_copied_app_folder">Copied to Preview MD</string>
+    <string name="home_msg_copy_failed">This file could not be copied</string>
+    <string name="home_msg_copy_needs_folder">Copying here needs the app folder — set it up in Settings</string>
     <string name="home_folders">Folders</string>
     <string name="home_empty_recents">No files yet</string>
     <string name="home_empty_recents_body">Open a Markdown file and it will appear here.</string>

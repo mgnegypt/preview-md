@@ -5,6 +5,10 @@ All notable changes to Preview MD. Versions follow the tag format
 
 ## [1.0.4] - 2026-11-20
 
+- New: swipe actions on Home file cards — drag a card right to
+  reveal Delete (with a confirmation; it deletes the actual file)
+  and left to reveal Copy (duplicates the file beside it, or into
+  the app folder when its own folder is not writable).
 - New: the app folder. Set it up once (Settings, or when the first
   save or new file asks) by picking Download; the app keeps a
   "Preview MD" folder inside it. New files are created there, and
