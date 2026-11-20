@@ -1,3 +1,6 @@
+import org.gradle.api.tasks.testing.Test
+import org.gradle.jvm.toolchain.JavaLanguageVersion
+import org.gradle.jvm.toolchain.JavaToolchainService
 import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 
 plugins {
@@ -123,4 +126,20 @@ dependencies {
     testImplementation(libs.androidx.compose.ui.test.junit4)
     testImplementation(libs.robolectric)
     testImplementation(libs.androidx.test.core)
+}
+
+// Unit tests run on a JDK 21 launcher: the Markdown renderer
+// (mikepenz 0.46.0) ships Java 21 bytecode (class file major 65,
+// verified in its published AARs), which a JDK 17 test JVM cannot
+// load — the first renderer-touching test died with
+// UnsupportedClassVersionError. The build itself stays on JDK 17;
+// only the test runtime moves, via a Gradle toolchain (CI installs
+// both JDKs; 17 remains the default).
+val javaToolchains = extensions.getByType(JavaToolchainService::class.java)
+tasks.withType<Test>().configureEach {
+    javaLauncher.set(
+        javaToolchains.launcherFor {
+            languageVersion.set(JavaLanguageVersion.of(21))
+        }
+    )
 }

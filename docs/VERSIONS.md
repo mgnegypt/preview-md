@@ -89,3 +89,12 @@ Method: Google Maven and Maven Central `maven-metadata.xml`, the GitHub releases
   JDK 21, while this project's CI runs JDK 17 (the plan's fixed
   toolchain), which supports up to API 35. The pin selects the
   TEST runtime only; the app still compiles and targets API 37.1.
+- Update (2026-11-20): the mikepenz renderer 0.46.0 artifacts ship
+  Java 21 bytecode (class file major 65, verified in the published
+  AARs), so any unit test that loads a renderer class dies on a
+  JDK 17 test JVM with UnsupportedClassVersionError — the app
+  itself is unaffected (D8/ART handle the bytecode; it runs on
+  device). Unit tests therefore run on a JDK 21 launcher via a
+  Gradle toolchain (app/build.gradle.kts); CI installs temurin 21
+  alongside 17, with 17 remaining the build default. The
+  `@Config(sdk = [35])` pin stays as the verified test runtime.

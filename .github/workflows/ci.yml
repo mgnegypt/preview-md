@@ -13,7 +13,12 @@ jobs:
       - uses: actions/setup-java@v6
         with:
           distribution: temurin
-          java-version: '17'
+          # 21 first, 17 last: the last JDK becomes the default
+          # (JAVA_HOME) for the build; 21 exists so the unit-test
+          # toolchain can run tests on it (see app/build.gradle.kts).
+          java-version: |
+            21
+            17
       - uses: gradle/actions/setup-gradle@v6
       - name: Lint, unit tests, debug APK
         run: ./gradlew lintDebug testDebugUnitTest assembleDebug
